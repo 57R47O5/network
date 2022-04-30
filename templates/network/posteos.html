@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+{% if user.is_authenticated %}
+    <div id="nuevo-post"></div>
+{% endif %}
+
+<div id="timeline"></div>
+
+{% endblock%}
