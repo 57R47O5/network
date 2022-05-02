@@ -1,5 +1,22 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-    TODO
+    {% if user.is_authenticated %}
+    <h3>Bienvenido, {{user.id}}</h3>
+        <div id="nuevo-post">
+            <form action="{% url 'index' %}" method="post" enctype="multipart/form-data">
+                {%csrf_token%}
+                {{post.as_p}}                
+                <input type="submit">
+            </form>            
+        </div>
+    {% endif %}
+
+    <div id="timeline">
+        <ul>
+        {% for posteo in posteos %}            
+            <li>{{posteo}}</li>
+        {%endfor%}
+        </ul>
+    </div>
 {% endblock %}

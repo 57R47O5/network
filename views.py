@@ -4,11 +4,29 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .forms import *
+
+from .models import *
 
 
 def index(request):
-    return render(request, "network/index.html")
+    # Recibimos los posteos. Deberiamos guardar los diez ultimos
+    posteos = Post.objects.all().order_by('-Timestamp')[:10]
+    contexto = {'posteos':posteos}
+    if request.method == "POST":
+        post = CrearPostForm(request.POST, request.FILES) 
+        if post.is_valid():
+            datos_posteo = post.cleaned_data
+            post.save()
+            contexto.update({'post':post})
+            return render(request, "network/prueba.html", contexto)
+            #return render(request, "network/index.html", contexto)
+        else:
+            return render(request, "network/error.html")
+    else:
+        post = CrearPostForm(initial={'Texto':'Que estas pensando?', 'User': request.user.pk})
+        contexto.update({'post':post})
+        return render(request, "network/index.html", contexto)
 
 
 def login_view(request):
