@@ -59,7 +59,14 @@ def postear(request):
     if request.method != "POST":
         return JsonResponse({"error": "POST request required."}, status=400)    
     else:           
-        datos = json.loads(request.body) # datos es un objeto Python
+        datos = json.loads(request.body) # datos es un objeto Python        
+        print(datos.values())
+        Usuario = datos.get("usuario","")
+        user = User.objects.get(pk=Usuario)
+        Texto = datos.get("texto", "")
+        Imagen = datos.get("imagen","")
+        post = Post.objects.create(User = user, Texto = Texto, Imagen = Imagen)
+        post.save() 
         return JsonResponse({"message": "Datos correctos."}, status=201)  
          
 
