@@ -1,32 +1,68 @@
+import json
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.views.generic.list  import ListView
+from django.core import serializers
+
 
 from .forms import *
 
 from .models import *
 
+class PostListView(ListView):
+    model = Post
+    paginate_by = 10
 
 def index(request):
     # Recibimos los posteos. Deberiamos guardar los diez ultimos
-    posteos = Post.objects.all().order_by('-Timestamp')[:10]
-    contexto = {'posteos':posteos}
-    if request.method == "POST":
-        post = CrearPostForm(request.POST, request.FILES) 
-        if post.is_valid():
-            datos_posteo = post.cleaned_data
-            post.save()
-            contexto.update({'post':post})
-            return render(request, "network/prueba.html", contexto)
+    #posteos = Post.objects.all().order_by('-Timestamp')[:10]
+    #contexto = {'posteos':posteos}
+    #if request.method == "POST":
+    #    post = CrearPostForm(request.POST, request.FILES) 
+    #    if post.is_valid():
+    #        datos_posteo = post.cleaned_data
+    #        post.save()
+    #        contexto.update({'post':post})
+    #        return render(request, "network/prueba.html", contexto)
             #return render(request, "network/index.html", contexto)
-        else:
-            return render(request, "network/error.html")
+    #    else:
+    #        return render(request, "network/error.html")
+    #else:
+    #    post = CrearPostForm(initial={'Texto':'Que estas pensando?', 'User': request.user.pk})
+    #    contexto.update({'post':post})
+    #    return render(request, "network/index.html", contexto)
+        return render(request, "network/index.html")   
+
+# Recibe un request y el numero de pagina y envia los elementos que corresponden en formato JSon
+
+def posts(request, pagina):
+    posteos = Post.objects.all().order_by('-Timestamp')     #Guardamos todos los posts
+    #p = Paginator(posteos, 10)                              #Vamos a ver 10 posts por pagina
+    if request.method == "GET":
+        #pagina_posteos = p.get_page(pagina)
+        #return JsonResponse(pagina_posteos.serialize())            
+        return JsonResponse([post.serialize() for post in posteos], safe=False)        
     else:
-        post = CrearPostForm(initial={'Texto':'Que estas pensando?', 'User': request.user.pk})
-        contexto.update({'post':post})
-        return render(request, "network/index.html", contexto)
+        return JsonResponse({
+            "error": "GET request required."
+        }, status=400)
+
+@csrf_exempt
+@login_required
+def postear(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)    
+    else:           
+        datos = json.loads(request.body) # datos es un objeto Python
+        return JsonResponse({"message": "Datos correctos."}, status=201)  
+         
+
 
 
 def login_view(request):

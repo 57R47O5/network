@@ -1,22 +1,32 @@
 {% extends "network/layout.html" %}
 
+{% load static %}
 {% block body %}
     {% if user.is_authenticated %}
-    <h3>Bienvenido, {{user.id}}</h3>
+    <h3>Bienvenido, {{user.username}}</h3>
         <div id="nuevo-post">
-            <form action="{% url 'index' %}" method="post" enctype="multipart/form-data">
-                {%csrf_token%}
-                {{post.as_p}}                
-                <input type="submit">
-            </form>            
+            <form id="form-nuevo-post" action="{% url 'postear' %}" method="post" enctype="multipart/form-data">       
+                <div class="grupo-form">
+                    <label for="id_Imagen">Imagen:</label>
+                    <input type="file" name="Imagen" accept="image/*" id="newpost_Imagen">        
+                </div>   
+                <div class="grupo-form">
+                    <label for="id_Texto">Texto:</label>
+                    <textarea name="Texto" cols="40" rows="5" maxlength="1024" required id="newpost_Texto">
+                    Que estas pensando?</textarea>
+                </div>
+                <div class="grupo-form"> 
+                    <input type="hidden" name="User" value={{user.id}} id="newpost_User">        
+                </div>                
+                    <input type="submit" value="Enviar">
+            </form>        
         </div>
     {% endif %}
 
-    <div id="timeline">
-        <ul>
-        {% for posteo in posteos %}            
-            <li>{{posteo}}</li>
-        {%endfor%}
-        </ul>
+    <div id="timeline">        
     </div>
+{% endblock %}
+
+{% block script %}    
+    <script src="{% static 'network/index.js' %}"></script>
 {% endblock %}

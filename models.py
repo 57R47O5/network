@@ -13,5 +13,18 @@ class Post(models.Model):
     Imagen = models.ImageField(upload_to='images/', blank=True)
     Timestamp = models.DateTimeField(auto_now_add=True)
     
+    def serialize(self):
+        return{
+            "id": self.id,
+            "User": self.User.pk,
+            "Texto": self.Texto,
+            #"Imagen": self.Imagen,
+            "Timestamp": self.Timestamp.strftime("%b %d %Y, %I:%M %p"),
+        }
+
+         
+
     def __str__(self) -> str:
         return f"{self.User}  {self.Timestamp} \n {self.Texto}" 
+
+    
