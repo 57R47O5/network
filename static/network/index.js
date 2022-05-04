@@ -128,9 +128,9 @@ window.onscroll = () => {
         document.querySelector('body').style.background = 'green';
     } else {
         document.querySelector('body').style.background = 'white';
-        pagina++;
-        let Objetousuario = {Todo:true, User:0, Seguidos: false};
-        cargar_posts(pagina, Objetousuario);
+        //pagina++;
+        //let Objetousuario = {Todo:true, User:0, Seguidos: false};
+        //cargar_posts(pagina, Objetousuario);
     }
     return false
 };

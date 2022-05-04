@@ -63,9 +63,7 @@ def postear(request):
         post = Post.objects.create(User = user, Texto = Texto, Imagen = Imagen, Likes=0)
         post.save() 
         return JsonResponse({"message": "Datos correctos."}, status=201)  
-         
-
-
+ 
 
 def login_view(request):
     if request.method == "POST":
