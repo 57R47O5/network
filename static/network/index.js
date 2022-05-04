@@ -4,8 +4,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Usamos los botones para elegir entre diferentes vistas
     // A implementar
 
-    //Por default, cargamos los posts
-    let usuario = 0;
+    //Por default, cargamos todos los posts
+    let usuario = {Todo:true, User:0, Seguidos: false};
     cargar_posts(pagina, usuario)
 
     
@@ -47,7 +47,10 @@ function cargar_posts(pagina, usuario){//Hay que cambiar de pagina a contexto
     document.querySelector("#nuevo-post").style.display = 'block'
 
     //Cargamos los posts. Recibimos como un solo objeto Json. Hay que cortar
-    fetch('/posts/' + pagina)
+    fetch('/posts/' + pagina, {
+        method: 'POST',
+        body: JSON.stringify(usuario)
+    })
     .then(response => response.json())
     .then(posts => {        
         for (let i=0; i<posts.length; i++){
