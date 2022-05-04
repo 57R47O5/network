@@ -24,16 +24,29 @@ def index(request):
 
 # Recibe un request y el numero de pagina y envia los elementos que corresponden en formato JSon
 
+@csrf_exempt
+@login_required
 def posts(request, pagina):
-    posteos = Post.objects.all().order_by('-Timestamp')     #Guardamos todos los posts
-    p = Paginator(posteos, 10)                              #Vamos a ver 10 posts por pagina
-    if request.method == "GET":
-        pagina_posteos = p.get_page(pagina)
-        return JsonResponse([post.serialize() for post in pagina_posteos], safe=False)                           
-    else:
-        return JsonResponse({
-            "error": "GET request required."
-        }, status=400)
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)    
+    else:           
+        datos = json.loads(request.body) # datos es un objeto Python        
+        Todo = datos.get("Todo", "")
+        User = datos.get("User", 0)
+        Seguidos = datos.get("Seguidos", "")        
+        if(Todo):         
+            posteos = Post.objects.all().order_by('-Timestamp')     #Guardamos todos los posts
+            p = Paginator(posteos, 10)                             #Vamos a ver 10 posts por pagina
+            pagina_posteos = p.get_page(pagina)
+            return JsonResponse([post.serialize() for post in pagina_posteos], safe=False)                           
+        elif(User != 0):
+            posteos = Post.objects.filter(User__pk=User).order_by('-Timestamp')     #Guardamos todos los posts
+            p = Paginator(posteos, 10)                             #Vamos a ver 10 posts por pagina
+            pagina_posteos = p.get_page(pagina)
+            return JsonResponse([post.serialize() for post in pagina_posteos], safe=False)                           
+        else:
+            JsonResponse({"error": "Tenemos algun tipo de error."}, status=400)
+    
 
 @csrf_exempt
 @login_required
@@ -50,9 +63,7 @@ def postear(request):
         post = Post.objects.create(User = user, Texto = Texto, Imagen = Imagen, Likes=0)
         post.save() 
         return JsonResponse({"message": "Datos correctos."}, status=201)  
-         
-
-
+ 
 
 def login_view(request):
     if request.method == "POST":
