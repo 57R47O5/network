@@ -4,10 +4,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Usamos los botones para elegir entre diferentes vistas
     // A implementar
 
-    //Por default, cargamos todos los posts
-    let usuario = {Todo:true, User:0, Seguidos: false};
-    cargar_posts(pagina, usuario)
-
+    //Por default, cargamos todos los posts y el form
+    document.querySelector("#timeline").style.display = 'block'
+    let Objetousuario = {Todo:true, User:0, Seguidos: false};
+    cargar_posts(pagina, Objetousuario)
     
     
     //Recibimos el form cuando se envia
@@ -40,11 +40,15 @@ document.addEventListener('DOMContentLoaded', function() {
     //cargar_form()
 })
 
-function cargar_posts(pagina, usuario){//Hay que cambiar de pagina a contexto
+function cargar_posts(pagina, usuario){
 
     // Ocultamos el perfil. Por que funciona con querySelector y no con getelementbyID?
     document.querySelector("#perfil").style.display = 'none'
-    document.querySelector("#nuevo-post").style.display = 'block'
+    //document.querySelector("#nuevo-post").style.display = 'block'
+    document.querySelector("#timeline").style.display = 'block'
+
+    //Reseteamos el timeline
+    document.querySelector("#timeline").innerHTML = ""
 
     //Cargamos los posts. Recibimos como un solo objeto Json. Hay que cortar
     fetch('/posts/' + pagina, {
@@ -78,8 +82,7 @@ function cargar_posts(pagina, usuario){//Hay que cambiar de pagina a contexto
             UserDiv.appendChild(UserIdDIv);
             UserDiv.addEventListener('click', function(e){
                 usuario = e.target.firstElementChild.value;
-                perfil(usuario);
-                console.log(usuario);
+                perfil(usuario);                
             })
             PostDiv.appendChild(TextoDiv);
             PostDiv.appendChild(LikesDiv);
@@ -104,17 +107,18 @@ function cargar_form(){
 
 function perfil(usuario){
 
+    console.log(usuario);
+
     // Ocultamos las vistas que no nos interesan
     document.getElementById("nuevo-post").style.display = 'none'
-    document.getElementById("timeline").style.display = 'none'
+    document.getElementById("timeline").style.display = 'block'
     document.getElementById("perfil").style.display = 'block'
 
     //Llamamos a perfil en views. De ahi debemos obtener una lista con todos los posts del usuario
-    fetch('/perfil/' + usuario)
-    .then(response => response.json())
-    .then(posts => {
-
-    })
+    let Objetousuario = {Todo:false, User:usuario, Seguidos: false};
+    cargar_posts(pagina, Objetousuario);
+    
+    return false;
 
 }
 
@@ -125,7 +129,8 @@ window.onscroll = () => {
     } else {
         document.querySelector('body').style.background = 'white';
         pagina++;
-        cargar_posts(pagina, 0);
+        let Objetousuario = {Todo:true, User:0, Seguidos: false};
+        cargar_posts(pagina, Objetousuario);
     }
     return false
 };

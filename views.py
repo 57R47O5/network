@@ -33,9 +33,14 @@ def posts(request, pagina):
         datos = json.loads(request.body) # datos es un objeto Python        
         Todo = datos.get("Todo", "")
         User = datos.get("User", 0)
-        Seguidos = datos.get("Seguidos", "")
-        if(Todo == "true"):
+        Seguidos = datos.get("Seguidos", "")        
+        if(Todo):         
             posteos = Post.objects.all().order_by('-Timestamp')     #Guardamos todos los posts
+            p = Paginator(posteos, 10)                             #Vamos a ver 10 posts por pagina
+            pagina_posteos = p.get_page(pagina)
+            return JsonResponse([post.serialize() for post in pagina_posteos], safe=False)                           
+        elif(User != 0):
+            posteos = Post.objects.filter(User__pk=User).order_by('-Timestamp')     #Guardamos todos los posts
             p = Paginator(posteos, 10)                             #Vamos a ver 10 posts por pagina
             pagina_posteos = p.get_page(pagina)
             return JsonResponse([post.serialize() for post in pagina_posteos], safe=False)                           
