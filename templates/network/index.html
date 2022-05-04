@@ -12,19 +12,28 @@
                 </div>   
                 <div class="grupo-form">
                     <label for="id_Texto">Texto:</label>
-                    <textarea name="Texto" cols="40" rows="5" maxlength="1024" required id="newpost_Texto">
-                    Que estas pensando?</textarea>
+                    <textarea name="Texto" cols="40" rows="5" maxlength="1024" required id="newpost_Texto"></textarea>
                 </div>
                 <div class="grupo-form"> 
                     <input type="hidden" name="User" value={{user.id}} id="newpost_User">        
+                </div>  
+                <div class="grupo-form"> 
+                    <input type="hidden" name="Likes" value=0 id="id_Likes">        
                 </div>                
                     <input type="submit" value="Enviar">
             </form>        
         </div>
     {% endif %}
 
+    <div id="perfil">
+        <h1>Aqui vamos a ver el perfil</h1>
+    </div>
+
     <div id="timeline">        
     </div>
+
+    
+
 {% endblock %}
 
 {% block script %}    

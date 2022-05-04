@@ -19,35 +19,17 @@ class PostListView(ListView):
     model = Post
     paginate_by = 10
 
-def index(request):
-    # Recibimos los posteos. Deberiamos guardar los diez ultimos
-    #posteos = Post.objects.all().order_by('-Timestamp')[:10]
-    #contexto = {'posteos':posteos}
-    #if request.method == "POST":
-    #    post = CrearPostForm(request.POST, request.FILES) 
-    #    if post.is_valid():
-    #        datos_posteo = post.cleaned_data
-    #        post.save()
-    #        contexto.update({'post':post})
-    #        return render(request, "network/prueba.html", contexto)
-            #return render(request, "network/index.html", contexto)
-    #    else:
-    #        return render(request, "network/error.html")
-    #else:
-    #    post = CrearPostForm(initial={'Texto':'Que estas pensando?', 'User': request.user.pk})
-    #    contexto.update({'post':post})
-    #    return render(request, "network/index.html", contexto)
+def index(request):    
         return render(request, "network/index.html")   
 
 # Recibe un request y el numero de pagina y envia los elementos que corresponden en formato JSon
 
 def posts(request, pagina):
     posteos = Post.objects.all().order_by('-Timestamp')     #Guardamos todos los posts
-    #p = Paginator(posteos, 10)                              #Vamos a ver 10 posts por pagina
+    p = Paginator(posteos, 10)                              #Vamos a ver 10 posts por pagina
     if request.method == "GET":
-        #pagina_posteos = p.get_page(pagina)
-        #return JsonResponse(pagina_posteos.serialize())            
-        return JsonResponse([post.serialize() for post in posteos], safe=False)        
+        pagina_posteos = p.get_page(pagina)
+        return JsonResponse([post.serialize() for post in pagina_posteos], safe=False)                           
     else:
         return JsonResponse({
             "error": "GET request required."
@@ -64,8 +46,8 @@ def postear(request):
         Usuario = datos.get("usuario","")
         user = User.objects.get(pk=Usuario)
         Texto = datos.get("texto", "")
-        Imagen = datos.get("imagen","")
-        post = Post.objects.create(User = user, Texto = Texto, Imagen = Imagen)
+        Imagen = datos.get("imagen","")        
+        post = Post.objects.create(User = user, Texto = Texto, Imagen = Imagen, Likes=0)
         post.save() 
         return JsonResponse({"message": "Datos correctos."}, status=201)  
          
@@ -122,3 +104,15 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+
+def perfil(request, usuario):
+    posteos = Post.objects.filter(User__pk=usuario).order_by('-Timestamp')     #Guardamos todos los posts
+    p = Paginator(posteos, 10)                              #Vamos a ver 10 posts por pagina
+    if request.method == "GET":
+        #pagina_posteos = p.get_page(pagina)
+        pagina_posteos = 1
+        return JsonResponse([post.serialize() for post in pagina_posteos], safe=False)                           
+    else:
+        return JsonResponse({
+            "error": "GET request required."
+        }, status=400)

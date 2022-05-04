@@ -14,6 +14,7 @@ urlpatterns = [
     # Rutas API
 
     path("postear", views.postear, name="postear"),
-    path("posts/<int:pagina>", views.posts, name="posts")
+    path("posts/<int:pagina>", views.posts, name="posts"),
+    path("perfil/<int:usuario>",  views.perfil, name="perfil")
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
