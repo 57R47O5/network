@@ -50,6 +50,9 @@ function cargar_posts(pagina, usuario){
     //Reseteamos el timeline
     document.querySelector("#timeline").innerHTML = ""
 
+    // Seteamos la variable children
+    let children=0;
+
     //Cargamos los posts. Recibimos como un solo objeto Json. Hay que cortar
     fetch('/posts/' + pagina, {
         method: 'POST',
@@ -91,8 +94,20 @@ function cargar_posts(pagina, usuario){
             document.querySelector("#timeline").appendChild(PostDiv);
             
         };        
-        console.log(posts);
+        console.log(posts);        
+        children = document.querySelector("#timeline").childElementCount;
+
+
+        if(pagina==1){document.querySelector("#page-item-1").style.display='none'}
+        else{document.querySelector("#page-item-1").style.display='block'};
+        document.querySelector("#page-item-1").firstChild.innerHTML = pagina - 1;    
+        document.querySelector("#page-item-2").firstChild.innerHTML = pagina;
+        if(children<10){document.querySelector("#page-item-3").style.display='none'}
+        else{document.querySelector("#page-item-3").style.display='block'};
+        document.querySelector("#page-item-3").firstChild.innerHTML = pagina + 1;
     });
+
+        
 }
 
 function cargar_form(){
@@ -122,10 +137,34 @@ function perfil(usuario){
 
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector("#page-item-anterior").addEventListener('click', ()=> {        
+        if (pagina > 1){pagina--;} 
+        let Objetousuario = {Todo:true, User:0, Seguidos: false};
+        cargar_posts(pagina, Objetousuario);       
+    });
+    document.querySelector("#page-item-siguiente").addEventListener('click', ()=> {        
+        pagina++;
+        let Objetousuario = {Todo:true, User:0, Seguidos: false};
+        cargar_posts(pagina, Objetousuario);       
+    });
+    document.querySelector("#page-item-1").addEventListener('click', ()=> {        
+        if (pagina > 1){pagina--;} 
+        let Objetousuario = {Todo:true, User:0, Seguidos: false};
+        cargar_posts(pagina, Objetousuario);       
+    });
+    document.querySelector("#page-item-3").addEventListener('click', ()=> {        
+        pagina++;
+        let Objetousuario = {Todo:true, User:0, Seguidos: false};
+        cargar_posts(pagina, Objetousuario);       
+    });
+})
+
+
 window.onscroll = () => {
 
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-        document.querySelector('body').style.background = 'green';
+        document.querySelector('body').style.background = 'white';
     } else {
         document.querySelector('body').style.background = 'white';
         //pagina++;
