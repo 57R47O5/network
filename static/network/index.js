@@ -98,12 +98,24 @@ function cargar_posts(pagina, usuario){
         children = document.querySelector("#timeline").childElementCount;
 
 
-        if(pagina==1){document.querySelector("#page-item-1").style.display='none'}
-        else{document.querySelector("#page-item-1").style.display='block'};
+        if(pagina==1){
+            document.querySelector("#page-item-1").style.display='none';
+            document.querySelector("#page-item-anterior").style.display='none';
+        }
+        else{
+            document.querySelector("#page-item-1").style.display='block'
+            document.querySelector("#page-item-anterior").style.display='block'
+        };
         document.querySelector("#page-item-1").firstChild.innerHTML = pagina - 1;    
         document.querySelector("#page-item-2").firstChild.innerHTML = pagina;
-        if(children<10){document.querySelector("#page-item-3").style.display='none'}
-        else{document.querySelector("#page-item-3").style.display='block'};
+        if(children<10){
+            document.querySelector("#page-item-3").style.display='none';
+            document.querySelector("#page-item-siguiente").style.display='none';
+        }
+        else{
+            document.querySelector("#page-item-3").style.display='block';
+            document.querySelector("#page-item-siguiente").style.display='block';
+        };
         document.querySelector("#page-item-3").firstChild.innerHTML = pagina + 1;
     });
 
