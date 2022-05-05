@@ -117,10 +117,25 @@ def register(request):
         return render(request, "network/register.html")
 
 def perfil(request, usuario):
-    nombre = User.objects.get(pk=usuario).username                             
+    nombre = User.objects.get(pk=usuario).username    
     if request.method == "GET":        
         return JsonResponse(nombre, safe=False)                           
     else:
         return JsonResponse({
             "error": "GET request required."
         }, status=400)
+
+@csrf_exempt
+@login_required
+def seguir(request):
+    if request.method == "POST":
+        datos = json.loads(request.body)
+        seguidor = datos.get("Seguidor","")
+        seguido = datos.get("Seguido", "")
+        Seguidor = User.objects.get(pk=seguidor)
+        Seguido = User.objects.get(pk=seguido)
+        siguiendo = Siguiendo.objects.create(Seguidor=Seguidor, Seguido=Seguido)
+        siguiendo.save()
+        return JsonResponse({"message":"Follow correcto"}, status=201)
+    else:
+        return JsonResponse({"message":"Debe ser un POST"}, status=400)

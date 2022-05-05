@@ -15,6 +15,7 @@ urlpatterns = [
 
     path("postear", views.postear, name="postear"),
     path("posts/<int:pagina>", views.posts, name="posts"),
-    path("perfil/<int:usuario>",  views.perfil, name="perfil")
+    path("perfil/<int:usuario>",  views.perfil, name="perfil"),
+    path("seguir", views.seguir, name="seguir"),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

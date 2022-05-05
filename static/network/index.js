@@ -154,7 +154,13 @@ function perfil(usuario){
         document.querySelector("#nombre-perfil").innerHTML = nombre;
     })
     
-    
+    document.querySelector('#follow-button').addEventListener('click', ()=>{
+      //Debemos enviar el perfil que vimos(seguido) y el nuestro(seguidor)
+      let seguido = usuario;
+      let seguidor = document.querySelector("#div_user").innerHTML;//Aca no obtenemos nada
+      seguir(seguidor, seguido);
+    })
+
     return false;
 
 }
@@ -182,6 +188,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 })
 
+function seguir(seguidor, seguido){
+    let datos={Seguidor:seguidor, Seguido:seguido}
+    console.log(datos)
+
+    fetch('/seguir', {
+        method:'POST',
+        body: JSON.stringify(datos)
+    })
+
+    return false;
+}
 
 window.onscroll = () => {
 
