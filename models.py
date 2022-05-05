@@ -8,13 +8,10 @@ class User(AbstractUser):
     pass    
 
 
-#class Seguidores(models.Model):
-    #User = models.ForeignKey(User, on_delete=CASCADE, blank=False)
-    #Seguidores = models.ManyToManyField(User, on_delete=models.SET_NULL, blank=True)
+class Siguiendo(models.Model):
+    Seguido = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, related_name="UsuarioSeguidor")
+    Seguidor = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, related_name="UsuarioSeguido")
 
-#class Seguidos(models.Model):
-    #User = models.ForeignKey(User, on_delete=CASCADE, blank=False)
-    #Seguidos = models.ManyToManyField(User, on_delete=models.SET_NULL, blank=True)
 
 class Post(models.Model):
     User = models.ForeignKey(User, on_delete= models.CASCADE, blank=False) 

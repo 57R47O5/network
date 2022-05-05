@@ -117,12 +117,9 @@ def register(request):
         return render(request, "network/register.html")
 
 def perfil(request, usuario):
-    posteos = Post.objects.filter(User__pk=usuario).order_by('-Timestamp')     #Guardamos todos los posts
-    p = Paginator(posteos, 10)                              #Vamos a ver 10 posts por pagina
-    if request.method == "GET":
-        #pagina_posteos = p.get_page(pagina)
-        pagina_posteos = 1
-        return JsonResponse([post.serialize() for post in pagina_posteos], safe=False)                           
+    nombre = User.objects.get(pk=usuario).username                             
+    if request.method == "GET":        
+        return JsonResponse(nombre, safe=False)                           
     else:
         return JsonResponse({
             "error": "GET request required."
