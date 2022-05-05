@@ -117,9 +117,15 @@ def register(request):
         return render(request, "network/register.html")
 
 def perfil(request, usuario):
-    nombre = User.objects.get(pk=usuario).username    
+    nombre = User.objects.get(pk=usuario).username  
+    userlogeado = request.user  
+    Lesigo = Siguiendo.objects.filter(Seguido=usuario, Seguidor=userlogeado).count()    
+    Mesigue = Siguiendo.objects.filter(Seguido=userlogeado, Seguidor=usuario).count()
+    print(Lesigo) #Si es 1, lo estamos siguiendo, si es 0, no lo seguimos
+    #Jsonresrponse puede dar como argumento una lista
+    datos = {'nombre':nombre, 'Lesigo':Lesigo, 'Mesigue': Mesigue}
     if request.method == "GET":        
-        return JsonResponse(nombre, safe=False)                           
+        return JsonResponse(datos, safe=False)                           
     else:
         return JsonResponse({
             "error": "GET request required."
@@ -139,3 +145,18 @@ def seguir(request):
         return JsonResponse({"message":"Follow correcto"}, status=201)
     else:
         return JsonResponse({"message":"Debe ser un POST"}, status=400)
+
+@csrf_exempt
+@login_required
+def dejar_de_seguir(request):
+    if request.method == "POST":
+        datos = json.loads(request.body)
+        seguidor = datos.get("Seguidor","")
+        seguido = datos.get("Seguido", "")
+        Seguidor = User.objects.get(pk=seguidor)
+        Seguido = User.objects.get(pk=seguido)
+        siguiendo = Siguiendo.objects.get(Seguidor=Seguidor, Seguido=Seguido)
+        siguiendo.delete()
+        return JsonResponse({"message":"Unfollow correcto"}, status=201)
+    else:
+        return JsonResponse({"message":"Debe ser un POST"}, status=400)        

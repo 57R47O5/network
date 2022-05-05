@@ -142,24 +142,37 @@ function perfil(usuario){
     document.getElementById("timeline").style.display = 'block';
     document.getElementById("perfil").style.display = 'block';
 
+    let usuariolog = document.querySelector("#div_user").innerHTML;
+
+    //Si estamos viendo nuestro perfil, ocultamos el div de seguimiento
+    if (usuario==usuariolog){document.querySelector("#div-seguir").style.display = 'none'}
+    else{document.querySelector("#div-seguir").style.display = 'block'}
+
     //Llamamos a perfil en views. De ahi debemos obtener una lista con todos los posts del usuario
     let Objetousuario = {Todo:false, User:usuario, Seguidos: false};
     cargar_posts(pagina, Objetousuario);
 
+
+    //Necesitamos  mas datos. Necesitamos saber si lo seguimos o no
     fetch('/perfil/' + usuario)
     .then(response => response.json())
     .then (datos => {
-        let nombre = datos;
+        let nombre = datos.nombre;
         console.log(datos);
         document.querySelector("#nombre-perfil").innerHTML = nombre;
+        seguimiento(datos.Mesigue, datos.Lesigo)
     })
     
-    document.querySelector('#follow-button').addEventListener('click', ()=>{
-      //Debemos enviar el perfil que vimos(seguido) y el nuestro(seguidor)
-      let seguido = usuario;
-      let seguidor = document.querySelector("#div_user").innerHTML;//Aca no obtenemos nada
+    document.querySelector('#follow-button').addEventListener('click', ()=>{      
+      let seguido = usuario;  
+      let seguidor = usuariolog;    
       seguir(seguidor, seguido);
     })
+    document.querySelector('#unfollow-button').addEventListener('click', ()=>{      
+        let seguido = usuario;  
+        let seguidor = usuariolog;    
+        dejar_de_seguir(seguidor, seguido);
+      })
 
     return false;
 
@@ -188,6 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 })
 
+// Crea una relacion de seguimiento
 function seguir(seguidor, seguido){
     let datos={Seguidor:seguidor, Seguido:seguido}
     console.log(datos)
@@ -198,6 +212,36 @@ function seguir(seguidor, seguido){
     })
 
     return false;
+}
+
+// Destruye una relacion de seguimiento
+function dejar_de_seguir(seguidor, seguido){
+    let datos={Seguidor:seguidor, Seguido:seguido}
+    console.log(datos)
+
+    fetch('/dejar_de_seguir', {
+        method:'POST',
+        body: JSON.stringify(datos)
+    })
+
+    return false;
+}
+
+// Muestra la relacion de seguimiento
+function  seguimiento(Mesigue, Lesigo){
+    if (Mesigue){
+        document.querySelector("#yatesigue").style.display='block'
+    }
+    else{document.querySelector("#yatesigue").style.display='none'};
+
+    if (Lesigo){
+        document.querySelector("#follow-button").style.display='none';
+        document.querySelector("#unfollow-button").style.display='block';
+    }
+    else{
+        document.querySelector("#follow-button").style.display='block';
+        document.querySelector("#unfollow-button").style.display='none';
+    };
 }
 
 window.onscroll = () => {
