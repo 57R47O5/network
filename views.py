@@ -44,6 +44,17 @@ def posts(request, pagina):
             p = Paginator(posteos, 10)                             #Vamos a ver 10 posts por pagina
             pagina_posteos = p.get_page(pagina)
             return JsonResponse([post.serialize() for post in pagina_posteos], safe=False)                           
+        elif(Seguidos):
+            siguiendo = Siguiendo.objects.filter(Seguidor = request.user) # Todos los usuarios que seguimos
+            print(siguiendo.values())
+            posteos = Post.objects.none() # Creamos un queryset vacio
+            for e in siguiendo:
+                print(e.Seguido_id)
+                posteos = posteos|Post.objects.filter(User__pk=e.Seguido_id)
+            posteos = posteos.order_by('-Timestamp')            #Si esto funciona hago 20 lagartijas
+            p = Paginator(posteos, 10)                             #Vamos a ver 10 posts por pagina
+            pagina_posteos = p.get_page(pagina)
+            return JsonResponse([post.serialize() for post in pagina_posteos], safe=False)                           
         else:
             JsonResponse({"error": "Tenemos algun tipo de error."}, status=400)
     

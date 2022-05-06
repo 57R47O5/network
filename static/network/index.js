@@ -2,7 +2,12 @@ let pagina = 1
 document.addEventListener('DOMContentLoaded', function() {
 
     // Usamos los botones para elegir entre diferentes vistas
-    // A implementar
+    document.querySelector("#id_following").addEventListener('click',()=>{
+        let Objetousuario = {Todo:false, User:0, Seguidos: true};
+        cargar_posts(pagina, Objetousuario);
+
+    })
+
 
     //Por default, cargamos todos los posts y el form
     document.querySelector("#timeline").style.display = 'block'
@@ -153,7 +158,6 @@ function perfil(usuario){
     cargar_posts(pagina, Objetousuario);
 
 
-    //Necesitamos  mas datos. Necesitamos saber si lo seguimos o no
     fetch('/perfil/' + usuario)
     .then(response => response.json())
     .then (datos => {
@@ -178,6 +182,7 @@ function perfil(usuario){
 
 }
 
+// Paginador
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelector("#page-item-anterior").addEventListener('click', ()=> {        
         if (pagina > 1){pagina--;} 
