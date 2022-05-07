@@ -130,8 +130,11 @@ def register(request):
 def perfil(request, usuario):
     nombre = User.objects.get(pk=usuario).username  
     userlogeado = request.user  
-    Lesigo = Siguiendo.objects.filter(Seguido=usuario, Seguidor=userlogeado).count()    
-    Mesigue = Siguiendo.objects.filter(Seguido=userlogeado, Seguidor=usuario).count()
+    #Lesigo = Siguiendo.objects.filter(Seguido=usuario, Seguidor=userlogeado).count()    
+    #Mesigue = Siguiendo.objects.filter(Seguido=userlogeado, Seguidor=usuario).count()
+    #Lesigo = User.objects.get(pk=usuario).Seguidor.count()
+    Lesigo = User.objects.filter(pk=usuario, Seguidor=userlogeado).count()
+    Mesigue = User.objects.filter(pk=userlogeado.pk, Seguidor = User.objects.get(pk=usuario)).count()
     print(Lesigo) #Si es 1, lo estamos siguiendo, si es 0, no lo seguimos
     #Jsonresrponse puede dar como argumento una lista
     datos = {'nombre':nombre, 'Lesigo':Lesigo, 'Mesigue': Mesigue}
@@ -150,10 +153,13 @@ def seguir(request):
         #seguidor = datos.get("Seguidor","")
         #seguido = datos.get("Seguido", "")
         seguidor = User.objects.get(pk=datos.get("Seguidor",""))        
-        seguido = User.objects.get(pk=datos.get("Seguido", ""))
-        seguidor.Seguido.add(seguido)
+        seguido = User.objects.get(pk=datos.get("Seguido", ""))  
+        print(str(seguidor))  
+        print(f"Sigue a")    
+        print(str(seguido))
+        #seguidor.Seguido.add(seguido)
         seguido.Seguidor.add(seguidor)
-        seguidor.save()
+        #seguidor.save()
         seguido.save()
         #siguiendo = Siguiendo.objects.create(Seguidor=Seguidor, Seguido=Seguido)
         #siguiendo.save()
@@ -172,7 +178,7 @@ def dejar_de_seguir(request):
         seguido = User.objects.get(pk=datos.get("Seguido", ""))
         #siguiendo = Siguiendo.objects.get(Seguidor=Seguidor, Seguido=Seguido)
         #siguiendo.delete()
-        seguidor.Seguido.remove(seguido)
+        #seguidor.Seguido.remove(seguido)
         seguido.Seguidor.remove(seguidor)
         return JsonResponse({"message":"Unfollow correcto"}, status=201)
     else:

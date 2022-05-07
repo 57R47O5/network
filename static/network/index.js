@@ -86,8 +86,7 @@ function cargar_posts(pagina, usuario){
             TextoDiv.innerHTML = posts[i].Texto;
             let LikesDiv = document.createElement("div");
             LikesDiv.id = "post-" + posts[i].id + "-Likes";
-            //LikesDiv.innerHTML = posts[i].Likes;
-            LikesDiv.innerHTML = 0;
+            LikesDiv.innerHTML = posts[i].Likes;            
             let TimestampDiv = document.createElement("div");
             TimestampDiv.id = "post-" + posts[i].id + "-Timestamp";
             TimestampDiv.innerHTML = posts[i].Timestamp;

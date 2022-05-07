@@ -5,8 +5,7 @@ from django.db import models
 
 
 class User(AbstractUser):
-    pass    
-    Seguido = models.ManyToManyField('self', blank=True, related_name="UsuarioSeguidor")
+    pass        
     Seguidor = models.ManyToManyField('self', blank=True, related_name="UsuarioSeguido")
 
 class Siguiendo(models.Model):
