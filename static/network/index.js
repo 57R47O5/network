@@ -48,6 +48,8 @@ document.addEventListener('DOMContentLoaded', function() {
     //cargar_form()
 })
 
+//Funcion que envia una solicitud y muestra los posts
+
 function cargar_posts(pagina, usuario){
 
     // Ocultamos el perfil. Por que funciona con querySelector y no con getelementbyID?
@@ -84,10 +86,15 @@ function cargar_posts(pagina, usuario){
             TextoDiv.innerHTML = posts[i].Texto;
             let LikesDiv = document.createElement("div");
             LikesDiv.id = "post-" + posts[i].id + "-Likes";
-            LikesDiv.innerHTML = posts[i].Likes;
+            //LikesDiv.innerHTML = posts[i].Likes;
+            LikesDiv.innerHTML = 0;
             let TimestampDiv = document.createElement("div");
             TimestampDiv.id = "post-" + posts[i].id + "-Timestamp";
             TimestampDiv.innerHTML = posts[i].Timestamp;
+            let ButtonLike = document.createElement("button");
+            ButtonLike.id = "post-" + posts[i].id + "-ButtonLike";
+            //ButtonLike.classList.add("btn btn-primary");
+            ButtonLike.innerHTML = "Me gusta";
             
             PostDiv.appendChild(UserDiv);
             UserDiv.appendChild(UserIdDIv);
@@ -98,6 +105,7 @@ function cargar_posts(pagina, usuario){
             PostDiv.appendChild(TextoDiv);
             PostDiv.appendChild(LikesDiv);
             PostDiv.appendChild(TimestampDiv);
+            PostDiv.appendChild(ButtonLike);
             
             document.querySelector("#timeline").appendChild(PostDiv);
             
@@ -247,6 +255,11 @@ function  seguimiento(Mesigue, Lesigo){
         document.querySelector("#follow-button").style.display='block';
         document.querySelector("#unfollow-button").style.display='none';
     };
+}
+
+// Crea una relacion de me gusta
+function like(Post){
+
 }
 
 window.onscroll = () => {

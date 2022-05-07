@@ -71,7 +71,7 @@ def postear(request):
         user = User.objects.get(pk=Usuario)
         Texto = datos.get("texto", "")
         Imagen = datos.get("imagen","")        
-        post = Post.objects.create(User = user, Texto = Texto, Imagen = Imagen, Likes=0)
+        post = Post.objects.create(User = user, Texto = Texto, Imagen = Imagen)
         post.save() 
         return JsonResponse({"message": "Datos correctos."}, status=201)  
  
@@ -147,12 +147,16 @@ def perfil(request, usuario):
 def seguir(request):
     if request.method == "POST":
         datos = json.loads(request.body)
-        seguidor = datos.get("Seguidor","")
-        seguido = datos.get("Seguido", "")
-        Seguidor = User.objects.get(pk=seguidor)
-        Seguido = User.objects.get(pk=seguido)
-        siguiendo = Siguiendo.objects.create(Seguidor=Seguidor, Seguido=Seguido)
-        siguiendo.save()
+        #seguidor = datos.get("Seguidor","")
+        #seguido = datos.get("Seguido", "")
+        seguidor = User.objects.get(pk=datos.get("Seguidor",""))        
+        seguido = User.objects.get(pk=datos.get("Seguido", ""))
+        seguidor.Seguido.add(seguido)
+        seguido.Seguidor.add(seguidor)
+        seguidor.save()
+        seguido.save()
+        #siguiendo = Siguiendo.objects.create(Seguidor=Seguidor, Seguido=Seguido)
+        #siguiendo.save()
         return JsonResponse({"message":"Follow correcto"}, status=201)
     else:
         return JsonResponse({"message":"Debe ser un POST"}, status=400)
@@ -162,12 +166,23 @@ def seguir(request):
 def dejar_de_seguir(request):
     if request.method == "POST":
         datos = json.loads(request.body)
-        seguidor = datos.get("Seguidor","")
-        seguido = datos.get("Seguido", "")
-        Seguidor = User.objects.get(pk=seguidor)
-        Seguido = User.objects.get(pk=seguido)
-        siguiendo = Siguiendo.objects.get(Seguidor=Seguidor, Seguido=Seguido)
-        siguiendo.delete()
+        #seguidor = datos.get("Seguidor","")
+        #seguido = datos.get("Seguido", "")
+        seguidor = User.objects.get(pk=datos.get("Seguidor",""))
+        seguido = User.objects.get(pk=datos.get("Seguido", ""))
+        #siguiendo = Siguiendo.objects.get(Seguidor=Seguidor, Seguido=Seguido)
+        #siguiendo.delete()
+        seguidor.Seguido.remove(seguido)
+        seguido.Seguidor.remove(seguidor)
         return JsonResponse({"message":"Unfollow correcto"}, status=201)
     else:
         return JsonResponse({"message":"Debe ser un POST"}, status=400)        
+
+@csrf_exempt
+@login_required
+def like(request):
+    if request.method == "POST":
+        datos = json.loads(request.body)
+        post = datos.get("Post","")
+        usuario = request.user
+        return JsonResponse({"message":"Todavia no hay nada"}, status=201)

@@ -5,3 +5,9 @@ div.post{
     border-radius: 5px;
     margin: 5px;    
 }
+button{
+    color: white;
+    background-color: #007bff;
+    margin:5px;
+    border-radius: 5px;
+}
