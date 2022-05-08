@@ -18,5 +18,7 @@ urlpatterns = [
     path("perfil/<int:usuario>",  views.perfil, name="perfil"),
     path("seguir", views.seguir, name="seguir"),
     path("dejar_de_seguir", views.dejar_de_seguir, name="dejar_de_seguir"),
+    path("like", views.like, name="like"),
+    path("unlike", views.unlike, name="unlike"),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

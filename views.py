@@ -170,4 +170,32 @@ def dejar_de_seguir(request):
         siguiendo.delete()
         return JsonResponse({"message":"Unfollow correcto"}, status=201)
     else:
-        return JsonResponse({"message":"Debe ser un POST"}, status=400)        
+        return JsonResponse({"message":"Debe ser un POST"}, status=400)  
+
+@csrf_exempt
+@login_required
+def like(request):
+    if request.method == "POST":
+        datos = json.loads(request.body)
+        post_id = datos.get("Post","")
+        usuario = request.user
+        Posteo = Post.objects.get(pk=post_id)        
+        like = Like.objects.create(Posteo=Posteo, Usuario=usuario)
+        like.save()
+        return JsonResponse({"message":"Like correcto"}, status=201)
+    else:
+        return JsonResponse({"message":"Debe ser un POST"}, status=400)  
+
+@csrf_exempt
+@login_required
+def unlike(request):
+    if request.method == "POST":
+        datos = json.loads(request.body)
+        post_id = datos.get("Post","")
+        usuario = request.user
+        Posteo = Post.objects.get(pk=post_id)        
+        like = Like.objects.get(Posteo=Posteo, Usuario=usuario)        
+        like.delete()
+        return JsonResponse({"message":"Like correcto"}, status=201)
+    else:
+        return JsonResponse({"message":"Debe ser un POST"}, status=400)  

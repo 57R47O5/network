@@ -88,7 +88,11 @@ function cargar_posts(pagina, usuario){
             let TimestampDiv = document.createElement("div");
             TimestampDiv.id = "post-" + posts[i].id + "-Timestamp";
             TimestampDiv.innerHTML = posts[i].Timestamp;
-            
+            let ButtonLike = document.createElement("button");
+            ButtonLike.id = "-Button-like-post-" + posts[i].id;
+            ButtonLike.innerHTML = "Me gusta";
+            ButtonLike.classList.add("button-post");
+
             PostDiv.appendChild(UserDiv);
             UserDiv.appendChild(UserIdDIv);
             UserDiv.addEventListener('click', function(e){
@@ -98,6 +102,7 @@ function cargar_posts(pagina, usuario){
             PostDiv.appendChild(TextoDiv);
             PostDiv.appendChild(LikesDiv);
             PostDiv.appendChild(TimestampDiv);
+            PostDiv.appendChild(ButtonLike);
             
             document.querySelector("#timeline").appendChild(PostDiv);
             
@@ -231,6 +236,43 @@ function dejar_de_seguir(seguidor, seguido){
 
     return false;
 }
+
+//Crea una relacion de like
+function like(post){
+    let datos={Post: post}
+    console.log(datos)
+
+    fetch('/like', {
+        method: 'POST',
+        body: JSON.stringify(datos)
+    })
+
+    return false;
+}
+
+//Destruye una relacion de like
+function unlike(post){
+    let datos={Post: post}
+    console.log(datos) 
+
+    fetch('/unlike', {
+        method: 'POST',
+        body: JSON.stringify(datos)
+    })
+
+    return false;
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+    document.querySelector("#timeline").addEventListener('click', function(e){
+        console.log(e.target);
+        if (e.target && e.target.matches("button.button-post")){
+            let post_id = e.target.id.slice(18) 
+            console.log(post_id);
+            like(post_id);          
+        }
+    })
+} )
 
 // Muestra la relacion de seguimiento
 function  seguimiento(Mesigue, Lesigo){

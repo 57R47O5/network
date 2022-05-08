@@ -36,4 +36,6 @@ class Post(models.Model):
     def __str__(self) -> str:
         return f"{self.User}  {self.Timestamp} \n {self.Texto}" 
 
-    
+class Like(models.Model):
+    Posteo = models.ForeignKey(Post, on_delete=models.CASCADE, blank=False)
+    Usuario = models.ForeignKey(User, on_delete=models.CASCADE, blank=False)
