@@ -60,8 +60,9 @@ function cargar_posts(pagina, usuario){
 
     // Seteamos la variable children
     let children=0;
-    // Y la variable global previo_post
-    previo_post = -1;
+    // Y la variable global previo_post    
+    previo_post = -1; //Esta bandera global nunca cambia
+    console.log("Estamos  cargando ahora", previo_post);
 
     //Cargamos los posts. Recibimos como un solo objeto Json. Hay que cortar
     fetch('/posts/' + pagina, {
@@ -76,20 +77,28 @@ function cargar_posts(pagina, usuario){
             PostDiv.classList.add("post");          
             let UserDiv = document.createElement("div");
             UserDiv.id = "post-" + posts[i].id + "-User";
+            UserDiv.classList.add("subdiv");
             UserDiv.innerHTML = posts[i].User;            
-            let UserIdDIv = document.createElement("div");
-            UserIdDIv.id = "post-" + posts[i].id + "-UserId";
-            UserIdDIv.value = posts[i].User_id;
-            UserIdDIv.style.display = 'none';
+            let UserIdDiv = document.createElement("div");
+            UserIdDiv.id = "post-" + posts[i].id + "-UserId";
+            UserIdDiv.classList.add("subdiv");
+            UserIdDiv.value = posts[i].User_id;
+            UserIdDiv.style.display = 'none';
             let TextoDiv = document.createElement("div");
             TextoDiv.id = "post-" + posts[i].id + "-Texto";
+            TextoDiv.classList.add("subdiv");
             TextoDiv.innerHTML = posts[i].Texto;
             let LikesDiv = document.createElement("div");
             LikesDiv.id = "post-" + posts[i].id + "-Likes";
             LikesDiv.innerHTML = posts[i].Likes;
+            LikesDiv.classList.add("subdiv");
             let TimestampDiv = document.createElement("div");
             TimestampDiv.id = "post-" + posts[i].id + "-Timestamp";
+            TimestampDiv.classList.add("subdiv");
             TimestampDiv.innerHTML = posts[i].Timestamp;           
+            let ButtonDiv = document.createElement("div");
+            ButtonDiv.id = "div-button" + posts[i].id;
+            ButtonDiv.classList.add("subdiv");
             let ButtonLike = document.createElement("button");
             ButtonLike.id = "-Button-like-post-" + posts[i].id;
             ButtonLike.innerHTML = "Me gusta";
@@ -103,7 +112,7 @@ function cargar_posts(pagina, usuario){
             
 
             PostDiv.appendChild(UserDiv);
-            UserDiv.appendChild(UserIdDIv);
+            UserDiv.appendChild(UserIdDiv);
             UserDiv.addEventListener('click', function(e){
                 usuario = e.target.firstElementChild.value;
                 perfil(usuario);                
@@ -111,8 +120,9 @@ function cargar_posts(pagina, usuario){
             PostDiv.appendChild(TextoDiv);
             PostDiv.appendChild(LikesDiv);
             PostDiv.appendChild(TimestampDiv);
-            PostDiv.appendChild(ButtonLike);
-            PostDiv.appendChild(ButtonUnLike);
+            ButtonDiv.appendChild(ButtonLike);
+            ButtonDiv.appendChild(ButtonUnLike);
+            PostDiv.appendChild(ButtonDiv);            
             
             document.querySelector("#timeline").appendChild(PostDiv);
             
@@ -277,39 +287,12 @@ function unlike(post){
 
 //Seleccionamos un post
 document.addEventListener("DOMContentLoaded", (event)=>{
-    document.querySelector("#timeline").addEventListener('mouseover', (e)=>{  
-        if (e.target.parentNode.classList == 'post'){ //Si el target es un hijo del post            
-            post = e.target.parentNode.id.slice(5)
-            console.log("Entrada", previo_post, post)
-            if (previo_post != post){     
-                post = previo_post;                  
-                e.target.addEventListener('click', function(){clickpost(e)})  //Tenemos que dar como argumento el evento
-                e.target.parentNode.classList.add("post1");                
-                e.target.parentNode.classList.remove("post");
-            }
-           
-        }
-    })
+    document.querySelector("#timeline").addEventListener('mouseover', mousesobrepost)
 })
 
 //Salimos de un post
 document.addEventListener("DOMContentLoaded", (event)=>{
-    document.querySelector("#timeline").addEventListener('mouseout', (e)=>{ 
-            if (e.target.parentNode.classList == 'post1'){                                   
-            post = e.target.parentNode.id.slice(5);            
-            console.log(post);
-            if (post != previo_post){
-                console.log("Salimos", post)
-                //Removemos el evento
-                e.target.removeEventListener('click', clickpost)            
-                //Cambiamos la clase
-                e.target.parentNode.classList.add("post");
-                e.target.parentNode.classList.remove("post1");
-                //Podemos intentar acá desactivar los botones
-                document.querySelector("#-Button-like-post-" + post).style.display='none';
-                document.querySelector("#-Button-unlike-post-" + post).style.display='none';
-        }}
-    })
+    document.querySelector("#timeline").addEventListener('mouseout', mousefuerapost)
 })
 
 // Muestra la relacion de seguimiento
@@ -329,11 +312,48 @@ function  seguimiento(Mesigue, Lesigo){
     };
 }
 
+// Movemos el mouse sobre un post
+// Esta funcion trabaja con e.target.parentNode = div
+function mousesobrepost(e){  
+    if (e.target.parentNode.classList == 'post'){ //Si el target es un hijo del post            
+        post = e.target.parentNode.id.slice(5)
+        console.log("Entrada", previo_post, post)
+        console.log("target.parentNode entrada", e.target.parentNode);
+        if (previo_post != post){     
+            previo_post = post;                  
+            e.target.parentNode.addEventListener('click', clickpost)  //Tenemos que dar como argumento el evento
+            e.target.parentNode.classList.add("post1");                
+            e.target.parentNode.classList.remove("post");
+        }
+       
+    }
+}
+
+//Sacamos un mouse de sobre un post
+// Esta funcion trabaja con e.target = div
+function mousefuerapost(e){   
+    console.log("target salida", e.target)
+    if (e.target.classList == "post1"){    
+        console.log("Saliendo", e.target);
+        previo_post = -1;
+        //Removemos el evento y agregamos otro
+        e.target.removeEventListener('click', clickpost);    
+        //Cambiamos la clase
+        e.target.classList.add("post");
+        e.target.classList.remove("post1");
+        //Podemos intentar acá desactivar los botones. 
+        document.querySelector("#-Button-like-post-" + post).style.display='none';
+        document.querySelector("#-Button-unlike-post-" + post).style.display='none';
+    }
+//}
+}
+
+
 //Damos  click a un post
 function clickpost(e)
 {                             
     console.log(e.target.parentNode);
-    post = e.target.parentNode.id.slice(5);
+    post = e.target.parentNode.id.slice(5);    
     let objeto = {post: post}
     let bandera_like = 0;
     console.log(post)
@@ -348,10 +368,13 @@ function clickpost(e)
     })
 
     if (!bandera_like){
-        document.querySelector("#-Button-like-post-" + post).style.display='block'
+        document.querySelector("#-Button-like-post-" + post).style.display='block';
+        //Aca debemos  agregar el eventlistener para la funcion like
+        //document.querySelector("#-Button-like-post-" + post).addEventListener('click', like(post))
     }
     else{
-        document.querySelector("#-Button-unlike-post-" + post).style.display='block'
+        document.querySelector("#-Button-unlike-post-" + post).style.display='block';
+        //document.querySelector("#-Button-unlike-post-" + post).addEventListener('click', unlike(post))
     };
         
 }
