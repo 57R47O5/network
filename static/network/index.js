@@ -48,11 +48,11 @@ document.addEventListener('DOMContentLoaded', function() {
     //cargar_form()
 })
 
+//Vemos los posts
 function cargar_posts(pagina, usuario){
 
     // Ocultamos el perfil. Por que funciona con querySelector y no con getelementbyID?
-    //document.querySelector("#perfil").style.display = 'none'
-    //document.querySelector("#nuevo-post").style.display = 'block'
+    
     document.querySelector("#timeline").style.display = 'block'
 
     //Reseteamos el timeline
@@ -60,6 +60,8 @@ function cargar_posts(pagina, usuario){
 
     // Seteamos la variable children
     let children=0;
+    // Y la variable global previo_post
+    previo_post = -1;
 
     //Cargamos los posts. Recibimos como un solo objeto Json. Hay que cortar
     fetch('/posts/' + pagina, {
@@ -87,11 +89,18 @@ function cargar_posts(pagina, usuario){
             LikesDiv.innerHTML = posts[i].Likes;
             let TimestampDiv = document.createElement("div");
             TimestampDiv.id = "post-" + posts[i].id + "-Timestamp";
-            TimestampDiv.innerHTML = posts[i].Timestamp;
+            TimestampDiv.innerHTML = posts[i].Timestamp;           
             let ButtonLike = document.createElement("button");
             ButtonLike.id = "-Button-like-post-" + posts[i].id;
             ButtonLike.innerHTML = "Me gusta";
             ButtonLike.classList.add("button-post");
+            ButtonLike.style.display='none';
+            let ButtonUnLike = document.createElement("button");
+            ButtonUnLike.id = "-Button-unlike-post-" + posts[i].id;
+            ButtonUnLike.innerHTML = "Ya no me gusta";
+            ButtonUnLike.classList.add("button-post1");
+            ButtonUnLike.style.display='none';
+            
 
             PostDiv.appendChild(UserDiv);
             UserDiv.appendChild(UserIdDIv);
@@ -103,8 +112,10 @@ function cargar_posts(pagina, usuario){
             PostDiv.appendChild(LikesDiv);
             PostDiv.appendChild(TimestampDiv);
             PostDiv.appendChild(ButtonLike);
+            PostDiv.appendChild(ButtonUnLike);
             
             document.querySelector("#timeline").appendChild(PostDiv);
+            
             
         };        
         console.log(posts);        
@@ -133,7 +144,8 @@ function cargar_posts(pagina, usuario){
     });
 
         
-}
+}   
+
 
 function cargar_form(){
     
@@ -263,16 +275,42 @@ function unlike(post){
     return false;
 }
 
-document.addEventListener("DOMContentLoaded", function(){
-    document.querySelector("#timeline").addEventListener('click', function(e){
-        console.log(e.target);
-        if (e.target && e.target.matches("button.button-post")){
-            let post_id = e.target.id.slice(18) 
-            console.log(post_id);
-            like(post_id);          
+//Seleccionamos un post
+document.addEventListener("DOMContentLoaded", (event)=>{
+    document.querySelector("#timeline").addEventListener('mouseover', (e)=>{  
+        if (e.target.parentNode.classList == 'post'){ //Si el target es un hijo del post            
+            post = e.target.parentNode.id.slice(5)
+            console.log("Entrada", previo_post, post)
+            if (previo_post != post){     
+                post = previo_post;                  
+                e.target.addEventListener('click', function(){clickpost(e)})  //Tenemos que dar como argumento el evento
+                e.target.parentNode.classList.add("post1");                
+                e.target.parentNode.classList.remove("post");
+            }
+           
         }
     })
-} )
+})
+
+//Salimos de un post
+document.addEventListener("DOMContentLoaded", (event)=>{
+    document.querySelector("#timeline").addEventListener('mouseout', (e)=>{ 
+            if (e.target.parentNode.classList == 'post1'){                                   
+            post = e.target.parentNode.id.slice(5);            
+            console.log(post);
+            if (post != previo_post){
+                console.log("Salimos", post)
+                //Removemos el evento
+                e.target.removeEventListener('click', clickpost)            
+                //Cambiamos la clase
+                e.target.parentNode.classList.add("post");
+                e.target.parentNode.classList.remove("post1");
+                //Podemos intentar acá desactivar los botones
+                document.querySelector("#-Button-like-post-" + post).style.display='none';
+                document.querySelector("#-Button-unlike-post-" + post).style.display='none';
+        }}
+    })
+})
 
 // Muestra la relacion de seguimiento
 function  seguimiento(Mesigue, Lesigo){
@@ -289,6 +327,33 @@ function  seguimiento(Mesigue, Lesigo){
         document.querySelector("#follow-button").style.display='block';
         document.querySelector("#unfollow-button").style.display='none';
     };
+}
+
+//Damos  click a un post
+function clickpost(e)
+{                             
+    console.log(e.target.parentNode);
+    post = e.target.parentNode.id.slice(5);
+    let objeto = {post: post}
+    let bandera_like = 0;
+    console.log(post)
+    fetch('/post', {
+        method: 'POST',
+        body:JSON.stringify(objeto)
+    })
+    .then(response=>response.json())
+    .then(datos=>{
+        console.log(datos.like);
+        bandera_like = datos.like;
+    })
+
+    if (!bandera_like){
+        document.querySelector("#-Button-like-post-" + post).style.display='block'
+    }
+    else{
+        document.querySelector("#-Button-unlike-post-" + post).style.display='block'
+    };
+        
 }
 
 window.onscroll = () => {

@@ -196,6 +196,21 @@ def unlike(request):
         Posteo = Post.objects.get(pk=post_id)        
         like = Like.objects.get(Posteo=Posteo, Usuario=usuario)        
         like.delete()
-        return JsonResponse({"message":"Like correcto"}, status=201)
+        return JsonResponse({"message":"Unlike correcto"}, status=201)
     else:
         return JsonResponse({"message":"Debe ser un POST"}, status=400)  
+
+@csrf_exempt
+@login_required
+def verpost(request):
+    if request.method == "POST":
+        datos = json.loads(request.body)
+        post_id = datos.get("post","")
+        print(post_id)
+        usuario = request.user
+        Posteo = Post.objects.get(pk=post_id) # Podemos pasar los datos relevantes por json
+        like = Like.objects.filter(Posteo = Posteo, Usuario = usuario).count()
+        datos = {"like":like}
+        return JsonResponse(datos, safe=False)
+    else:
+        return JsonResponse({"message":"Debe ser un POST"}, status=400) 

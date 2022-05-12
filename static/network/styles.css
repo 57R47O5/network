@@ -3,12 +3,36 @@ div.post{
     border-width: 1px;
     border-color: black;    
     border-radius: 5px;
-    margin: 5px;    
+    background-color: white;
+    margin: 5px;     
+    padding: 5px;   
+}
+div.post1{
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;    
+    border-radius: 5px;
+    padding: 5px;
+    margin: 5px; 
+    background-color: #007bff;
+    animation: grow;      
 }
 button{
     border-style: solid;
     border-width: 1px;
     border-radius: 5px;
     background-color: #007bff;
+    margin: 2px;    
     color: white;
+}
+#timeline{
+    width: 8cm;
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes grow {
+    0% {font-size: 2em;}
+    50% {font-size: 2em;}
+    100% {font-size: 2em;}
 }

@@ -35,7 +35,7 @@
         </div>    
     </div>
 
-    <div id="timeline">        
+    <div id="timeline" class="timeline-class">        
     </div>
 
     <nav aria-label="Navegacion-Paginas">
@@ -46,9 +46,12 @@
           <li class="page-item" id="page-item-3"><a class="page-link" href="#">3</a></li>
           <li class="page-item" id="page-item-siguiente"><a class="page-link" href="#">Siguiente</a></li>
         </ul>
-      </nav>
+    </nav>
+    <div class="post1" style="display: none;">No se ve</div>
 
+      
 {% endblock %}
+
 
 {% block script %}    
     <script src="{% static 'network/index.js' %}"></script>
