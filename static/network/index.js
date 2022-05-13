@@ -72,6 +72,8 @@ function cargar_posts(pagina, usuario){
     .then(response => response.json())
     .then(posts => {        
         for (let i=0; i<posts.length; i++){
+            crear_post(posts[i])
+            /*/
             let PostDiv = document.createElement("div");            
             PostDiv.id = "post-" + posts[i].id;  
             PostDiv.classList.add("post");          
@@ -124,8 +126,9 @@ function cargar_posts(pagina, usuario){
             ButtonDiv.appendChild(ButtonUnLike);
             PostDiv.appendChild(ButtonDiv);            
             
+
             document.querySelector("#timeline").appendChild(PostDiv);
-            
+            /*/
             
         };        
         console.log(posts);        
@@ -156,6 +159,61 @@ function cargar_posts(pagina, usuario){
         
 }   
 
+function crear_post(post){
+            let PostDiv = document.createElement("div");            
+            PostDiv.id = "post-" + post.id;  
+            PostDiv.classList.add("post");          
+            let UserDiv = document.createElement("div");
+            UserDiv.id = "post-" + post.id + "-User";
+            UserDiv.classList.add("subdiv");
+            UserDiv.innerHTML = post.User;            
+            let UserIdDiv = document.createElement("div");
+            UserIdDiv.id = "post-" + post.id + "-UserId";
+            UserIdDiv.classList.add("subdiv");
+            UserIdDiv.value = post.User_id;
+            UserIdDiv.style.display = 'none';
+            let TextoDiv = document.createElement("div");
+            TextoDiv.id = "post-" + post.id + "-Texto";
+            TextoDiv.classList.add("subdiv");
+            TextoDiv.innerHTML = post.Texto;
+            let LikesDiv = document.createElement("div");
+            LikesDiv.id = "post-" + post.id + "-Likes";
+            LikesDiv.innerHTML = post.Likes;
+            LikesDiv.classList.add("subdiv");
+            let TimestampDiv = document.createElement("div");
+            TimestampDiv.id = "post-" + post.id + "-Timestamp";
+            TimestampDiv.classList.add("subdiv");
+            TimestampDiv.innerHTML = post.Timestamp;           
+            let ButtonDiv = document.createElement("div");
+            ButtonDiv.id = "div-button" + post.id;
+            ButtonDiv.classList.add("subdiv");
+            let ButtonLike = document.createElement("button");
+            ButtonLike.id = "-Button-like-post-" + post.id;
+            ButtonLike.innerHTML = "Me gusta";
+            ButtonLike.classList.add("button-post");
+            ButtonLike.style.display='none';
+            let ButtonUnLike = document.createElement("button");
+            ButtonUnLike.id = "-Button-unlike-post-" + post.id;
+            ButtonUnLike.innerHTML = "Ya no me gusta";
+            ButtonUnLike.classList.add("button-post1");
+            ButtonUnLike.style.display='none';
+            
+
+            PostDiv.appendChild(UserDiv);
+            UserDiv.appendChild(UserIdDiv);
+            UserDiv.addEventListener('click', function(e){
+                usuario = e.target.firstElementChild.value;
+                perfil(usuario);                
+            })
+            PostDiv.appendChild(TextoDiv);
+            PostDiv.appendChild(LikesDiv);
+            PostDiv.appendChild(TimestampDiv);
+            ButtonDiv.appendChild(ButtonLike);
+            ButtonDiv.appendChild(ButtonUnLike);
+            PostDiv.appendChild(ButtonDiv); 
+            
+            document.querySelector("#timeline").appendChild(PostDiv);
+}
 
 function cargar_form(){
     
@@ -317,8 +375,8 @@ function  seguimiento(Mesigue, Lesigo){
 function mousesobrepost(e){  
     if (e.target.parentNode.classList == 'post'){ //Si el target es un hijo del post            
         post = e.target.parentNode.id.slice(5)
-        console.log("Entrada", previo_post, post)
-        console.log("target.parentNode entrada", e.target.parentNode);
+        //console.log("Entrada", previo_post, post)
+        //console.log("target.parentNode entrada", e.target.parentNode);
         if (previo_post != post){     
             previo_post = post;                  
             e.target.parentNode.addEventListener('click', clickpost)  //Tenemos que dar como argumento el evento
@@ -332,9 +390,9 @@ function mousesobrepost(e){
 //Sacamos un mouse de sobre un post
 // Esta funcion trabaja con e.target = div
 function mousefuerapost(e){   
-    console.log("target salida", e.target)
+    //console.log("target salida", e.target)
     if (e.target.classList == "post1"){    
-        console.log("Saliendo", e.target);
+        //console.log("Saliendo", e.target);
         previo_post = -1;
         //Removemos el evento y agregamos otro
         e.target.removeEventListener('click', clickpost);    
@@ -351,7 +409,8 @@ function mousefuerapost(e){
 
 //Damos  click a un post
 function clickpost(e)
-{                             
+{              
+    console.log("Funcion clickpost")               
     console.log(e.target.parentNode);
     post = e.target.parentNode.id.slice(5);    
     let objeto = {post: post}
@@ -370,11 +429,11 @@ function clickpost(e)
     if (!bandera_like){
         document.querySelector("#-Button-like-post-" + post).style.display='block';
         //Aca debemos  agregar el eventlistener para la funcion like
-        //document.querySelector("#-Button-like-post-" + post).addEventListener('click', like(post))
+    document.querySelector("#-Button-like-post-" + post).addEventListener('click', ()=>{like(post)})
     }
     else{
         document.querySelector("#-Button-unlike-post-" + post).style.display='block';
-        //document.querySelector("#-Button-unlike-post-" + post).addEventListener('click', unlike(post))
+        document.querySelector("#-Button-unlike-post-" + post).addEventListener('click', ()=>{unlike(post)})
     };
         
 }
