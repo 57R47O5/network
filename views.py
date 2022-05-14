@@ -57,7 +57,22 @@ def posts(request, pagina):
             return JsonResponse([post.serialize() for post in pagina_posteos], safe=False)                           
         else:
             JsonResponse({"error": "Tenemos algun tipo de error."}, status=400)
-    
+
+@csrf_exempt
+@login_required
+def verpost(request):
+    if request.method == "POST":
+        datos = json.loads(request.body)
+        post_id = datos.get("post","")
+        print(post_id)
+        usuario = request.user
+        Posteo = Post.objects.get(pk=post_id) # Podemos pasar los datos relevantes por json
+        posteo = Posteo.serialize()
+        like = Like.objects.filter(Posteo = Posteo, Usuario = usuario).count()
+        datos = {"like":like, "posteo":posteo}
+        return JsonResponse(datos, safe=False)
+    else:
+        return JsonResponse({"message":"Debe ser un POST"}, status=400)     
 
 @csrf_exempt
 @login_required
@@ -200,17 +215,3 @@ def unlike(request):
     else:
         return JsonResponse({"message":"Debe ser un POST"}, status=400)  
 
-@csrf_exempt
-@login_required
-def verpost(request):
-    if request.method == "POST":
-        datos = json.loads(request.body)
-        post_id = datos.get("post","")
-        print(post_id)
-        usuario = request.user
-        Posteo = Post.objects.get(pk=post_id) # Podemos pasar los datos relevantes por json
-        like = Like.objects.filter(Posteo = Posteo, Usuario = usuario).count()
-        datos = {"like":like}
-        return JsonResponse(datos, safe=False)
-    else:
-        return JsonResponse({"message":"Debe ser un POST"}, status=400) 

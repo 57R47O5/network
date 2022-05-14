@@ -20,6 +20,6 @@ urlpatterns = [
     path("dejar_de_seguir", views.dejar_de_seguir, name="dejar_de_seguir"),
     path("like", views.like, name="like"),
     path("unlike", views.unlike, name="unlike"),
-    path("post", views.verpost, name="ver_post")
+    path("verpost", views.verpost, name="ver_post"),   
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

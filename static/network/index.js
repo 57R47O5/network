@@ -9,10 +9,12 @@ document.addEventListener('DOMContentLoaded', function() {
     })
 
 
-    //Por default, cargamos todos los posts y el form
+    //Por default, cargamos todos los posts, el form y la paginacion
     document.querySelector("#timeline").style.display = 'block'
     document.querySelector("#perfil").style.display = 'none'
     document.querySelector("#nuevo-post").style.display = 'block'
+    document.querySelector("#h3-bienvenido").style.display = 'block'
+    document.querySelector(".pagination").parentNode.style.display='block';
 
     let Objetousuario = {Todo:true, User:0, Seguidos: false};
     cargar_posts(pagina, Objetousuario)
@@ -72,64 +74,7 @@ function cargar_posts(pagina, usuario){
     .then(response => response.json())
     .then(posts => {        
         for (let i=0; i<posts.length; i++){
-            crear_post(posts[i])
-            /*/
-            let PostDiv = document.createElement("div");            
-            PostDiv.id = "post-" + posts[i].id;  
-            PostDiv.classList.add("post");          
-            let UserDiv = document.createElement("div");
-            UserDiv.id = "post-" + posts[i].id + "-User";
-            UserDiv.classList.add("subdiv");
-            UserDiv.innerHTML = posts[i].User;            
-            let UserIdDiv = document.createElement("div");
-            UserIdDiv.id = "post-" + posts[i].id + "-UserId";
-            UserIdDiv.classList.add("subdiv");
-            UserIdDiv.value = posts[i].User_id;
-            UserIdDiv.style.display = 'none';
-            let TextoDiv = document.createElement("div");
-            TextoDiv.id = "post-" + posts[i].id + "-Texto";
-            TextoDiv.classList.add("subdiv");
-            TextoDiv.innerHTML = posts[i].Texto;
-            let LikesDiv = document.createElement("div");
-            LikesDiv.id = "post-" + posts[i].id + "-Likes";
-            LikesDiv.innerHTML = posts[i].Likes;
-            LikesDiv.classList.add("subdiv");
-            let TimestampDiv = document.createElement("div");
-            TimestampDiv.id = "post-" + posts[i].id + "-Timestamp";
-            TimestampDiv.classList.add("subdiv");
-            TimestampDiv.innerHTML = posts[i].Timestamp;           
-            let ButtonDiv = document.createElement("div");
-            ButtonDiv.id = "div-button" + posts[i].id;
-            ButtonDiv.classList.add("subdiv");
-            let ButtonLike = document.createElement("button");
-            ButtonLike.id = "-Button-like-post-" + posts[i].id;
-            ButtonLike.innerHTML = "Me gusta";
-            ButtonLike.classList.add("button-post");
-            ButtonLike.style.display='none';
-            let ButtonUnLike = document.createElement("button");
-            ButtonUnLike.id = "-Button-unlike-post-" + posts[i].id;
-            ButtonUnLike.innerHTML = "Ya no me gusta";
-            ButtonUnLike.classList.add("button-post1");
-            ButtonUnLike.style.display='none';
-            
-
-            PostDiv.appendChild(UserDiv);
-            UserDiv.appendChild(UserIdDiv);
-            UserDiv.addEventListener('click', function(e){
-                usuario = e.target.firstElementChild.value;
-                perfil(usuario);                
-            })
-            PostDiv.appendChild(TextoDiv);
-            PostDiv.appendChild(LikesDiv);
-            PostDiv.appendChild(TimestampDiv);
-            ButtonDiv.appendChild(ButtonLike);
-            ButtonDiv.appendChild(ButtonUnLike);
-            PostDiv.appendChild(ButtonDiv);            
-            
-
-            document.querySelector("#timeline").appendChild(PostDiv);
-            /*/
-            
+            crear_post(posts[i])                       
         };        
         console.log(posts);        
         children = document.querySelector("#timeline").childElementCount;
@@ -188,12 +133,12 @@ function crear_post(post){
             ButtonDiv.id = "div-button" + post.id;
             ButtonDiv.classList.add("subdiv");
             let ButtonLike = document.createElement("button");
-            ButtonLike.id = "-Button-like-post-" + post.id;
+            ButtonLike.id = "Butlike-post-" + post.id;
             ButtonLike.innerHTML = "Me gusta";
             ButtonLike.classList.add("button-post");
             ButtonLike.style.display='none';
             let ButtonUnLike = document.createElement("button");
-            ButtonUnLike.id = "-Button-unlike-post-" + post.id;
+            ButtonUnLike.id = "Butunlike-post-" + post.id;
             ButtonUnLike.innerHTML = "Ya no me gusta";
             ButtonUnLike.classList.add("button-post1");
             ButtonUnLike.style.display='none';
@@ -213,6 +158,8 @@ function crear_post(post){
             PostDiv.appendChild(ButtonDiv); 
             
             document.querySelector("#timeline").appendChild(PostDiv);
+            //document.querySelector("#Butlike-post-" + post.id).style.display='none';
+            //document.querySelector("#Butunlike-post-" + post.id).style.display='none';
 }
 
 function cargar_form(){
@@ -400,8 +347,8 @@ function mousefuerapost(e){
         e.target.classList.add("post");
         e.target.classList.remove("post1");
         //Podemos intentar acá desactivar los botones. 
-        document.querySelector("#-Button-like-post-" + post).style.display='none';
-        document.querySelector("#-Button-unlike-post-" + post).style.display='none';
+        document.querySelector("#Butlike-post-" + post).style.display='none';
+        document.querySelector("#Butunlike-post-" + post).style.display='none';
     }
 //}
 }
@@ -416,26 +363,56 @@ function clickpost(e)
     let objeto = {post: post}
     let bandera_like = 0;
     console.log(post)
-    fetch('/post', {
+    fetch('/verpost', {
         method: 'POST',
         body:JSON.stringify(objeto)
-    })
-    .then(response=>response.json())
+    })    
+    .then(response=>response.json())    
     .then(datos=>{
-        console.log(datos.like);
+        console.log("Datos.like", datos.like);               
         bandera_like = datos.like;
+        document.querySelector("#timeline").innerHTML = "";
+        crear_post(datos.posteo);  
+        administrador_buttonlike(bandera_like, post);      
     })
+    
+    document.querySelector("#h3-bienvenido").style.display='none';
+    document.querySelector("#nuevo-post").style.display='none';
+    document.querySelector(".pagination").parentNode.style.display='none';
+    document.querySelector("#Butlike-post-" + post).parentNode.style.display='block';
+    document.querySelector("#Butlike-post-" + post).style.display='inline';
+    // El problema parece ser la funcion crear_post
+    
+    //document.querySelector("#Cualquiercosa").style.display='block';
+    //document.querySelector(".button-post").style.display='block';
 
+    /*
     if (!bandera_like){
-        document.querySelector("#-Button-like-post-" + post).style.display='block';
+        console.log("Deberiamos entrar aqui");
+        console.log(document.querySelector("#Butlike-post-" + post));        
+        document.querySelector("#Butlike-post-" + post).style.display='block';
+        console.log(document.querySelector("#Butlike-post-" + post));  
         //Aca debemos  agregar el eventlistener para la funcion like
-    document.querySelector("#-Button-like-post-" + post).addEventListener('click', ()=>{like(post)})
+        document.querySelector("#Butunlike-post-" + post).addEventListener('click', ()=>{like(post)})
     }
     else{
-        document.querySelector("#-Button-unlike-post-" + post).style.display='block';
-        document.querySelector("#-Button-unlike-post-" + post).addEventListener('click', ()=>{unlike(post)})
-    };
+        document.querySelector("#Butlike-post-" + post).style.display='block';
+        document.querySelector("#Butunlike-post-" + post).addEventListener('click', ()=>{unlike(post)})
+    };*/
         
+}
+
+function administrador_buttonlike(bandera_like, post){
+    console.log("Estamos en administrador")
+    console.log("#Butlike-post-" + post)
+    if (!bandera_like){
+        document.querySelector("#Butlike-post-" + post).style.display='block';
+        document.querySelector("#Butunlike-post-" + post).addEventListener('click', ()=>{like(post)})
+    }
+    else{
+        document.querySelector("#Butlike-post-" + post).style.display='block';
+        document.querySelector("#Butunlike-post-" + post).addEventListener('click', ()=>{unlike(post)})
+    };
 }
 
 window.onscroll = () => {
