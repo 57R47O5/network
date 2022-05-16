@@ -407,11 +407,13 @@ function administrador_buttonlike(bandera_like, post){
     console.log("#Butlike-post-" + post)
     if (!bandera_like){
         document.querySelector("#Butlike-post-" + post).style.display='block';
-        document.querySelector("#Butunlike-post-" + post).addEventListener('click', ()=>{like(post)})
+        document.querySelector("#Butunlike-post-" + post).style.display='none';        
+        document.querySelector("#Butlike-post-" + post).addEventListener('click', ()=>{like(post)});
     }
     else{
-        document.querySelector("#Butlike-post-" + post).style.display='block';
-        document.querySelector("#Butunlike-post-" + post).addEventListener('click', ()=>{unlike(post)})
+        document.querySelector("#Butlike-post-" + post).style.display='none';
+        document.querySelector("#Butunlike-post-" + post).style.display='block';
+        document.querySelector("#Butunlike-post-" + post).addEventListener('click', ()=>{unlike(post)});
     };
 }
 
