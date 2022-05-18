@@ -17,37 +17,15 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector(".pagination").parentNode.style.display='block';
 
     let Objetousuario = {Todo:true, User:0, Seguidos: false};
-    cargar_posts(pagina, Objetousuario)
+    cargar_posts(pagina, Objetousuario);
+
+    // Usaremos esta bandera para indicar a enviar_post() si se trata de un post nuevo o una edicion
+    //0: nuevo post, otro numero: edicion
+    let n_post = 0;    
     
+    enviar_post(n_post);
+
     
-    //Recibimos el form cuando se envia
-    document.querySelector('#form-nuevo-post').onsubmit = () => {
-
-        const imagen = document.querySelector('#newpost_Imagen').value;
-        const texto = document.querySelector('#newpost_Texto').value;
-        const usuario = document.querySelector('#newpost_User').value;
-        const likes = document.querySelector("#id_Likes").value;
-
-        //Enviamos el form    
-
-        fetch('/postear',{
-            method: 'POST',
-            body: JSON.stringify({
-                imagen: imagen,
-                texto: texto,
-                usuario: usuario,                                
-            })                                
-        })        
-        .then(response => response.json())
-        .then(result=>{
-            console.log(result);
-        })
-
-        //cargar_form()
-        return false;
-    };  
-
-    //cargar_form()
 })
 
 //Vemos los posts
@@ -354,57 +332,41 @@ function mousefuerapost(e){
 }
 
 
-//Damos  click a un post
+//Damos  click a un post. 
 function clickpost(e)
-{              
-    console.log("Funcion clickpost")               
-    console.log(e.target.parentNode);
-    post = e.target.parentNode.id.slice(5);    
-    let objeto = {post: post}
-    let bandera_like = 0;
-    console.log(post)
+{     
+    post1 = e.target.parentNode.id.slice(5);       
+    let objeto = {post: post1};
+    let bandera_like = 0;              
     fetch('/verpost', {
         method: 'POST',
         body:JSON.stringify(objeto)
-    })    
+    })
     .then(response=>response.json())    
-    .then(datos=>{
-        console.log("Datos.like", datos.like);               
+    .then(datos=>{ 
+        post = post1;   
+        autor = datos.posteo.User_id;     
         bandera_like = datos.like;
         document.querySelector("#timeline").innerHTML = "";
         crear_post(datos.posteo);  
-        administrador_buttonlike(bandera_like, post);      
+        administrador_buttonlike(bandera_like, post); 
+        let usuariolog = document.querySelector("#div_user").innerHTML;  
+        if(autor == usuariolog){
+            console.log("El autor del post es el usuario actual");
+            administrador_buttonedit(post);
+        }   
     })
     
     document.querySelector("#h3-bienvenido").style.display='none';
+    document.querySelector("#h4-nuevo-editar").innerText='Editar';
     document.querySelector("#nuevo-post").style.display='none';
     document.querySelector(".pagination").parentNode.style.display='none';
     document.querySelector("#Butlike-post-" + post).parentNode.style.display='block';
     document.querySelector("#Butlike-post-" + post).style.display='inline';
-    // El problema parece ser la funcion crear_post
-    
-    //document.querySelector("#Cualquiercosa").style.display='block';
-    //document.querySelector(".button-post").style.display='block';
-
-    /*
-    if (!bandera_like){
-        console.log("Deberiamos entrar aqui");
-        console.log(document.querySelector("#Butlike-post-" + post));        
-        document.querySelector("#Butlike-post-" + post).style.display='block';
-        console.log(document.querySelector("#Butlike-post-" + post));  
-        //Aca debemos  agregar el eventlistener para la funcion like
-        document.querySelector("#Butunlike-post-" + post).addEventListener('click', ()=>{like(post)})
-    }
-    else{
-        document.querySelector("#Butlike-post-" + post).style.display='block';
-        document.querySelector("#Butunlike-post-" + post).addEventListener('click', ()=>{unlike(post)})
-    };*/
-        
+       
 }
 
-function administrador_buttonlike(bandera_like, post){
-    console.log("Estamos en administrador")
-    console.log("#Butlike-post-" + post)
+function administrador_buttonlike(bandera_like, post){    
     if (!bandera_like){
         document.querySelector("#Butlike-post-" + post).style.display='block';
         document.querySelector("#Butunlike-post-" + post).style.display='none';        
@@ -416,6 +378,80 @@ function administrador_buttonlike(bandera_like, post){
         document.querySelector("#Butunlike-post-" + post).addEventListener('click', ()=>{unlike(post)});
     };
 }
+
+function administrador_buttonedit(post){
+    let EditButton = document.createElement("button");
+    EditButton.id = "edit-button";
+    EditButton.innerText = "Editar";
+    document.querySelector("#post-"+post).appendChild(EditButton);
+    document.querySelector("#edit-button").addEventListener('click',()=>{editar(post)});
+
+}
+
+// Habilita solo el form para editar el post y enviarlo
+
+function editar(post){
+
+    //Para ver el valor de post
+    console.log(post);
+
+    document.querySelector("#h3-bienvenido").style.display='none';
+    document.querySelector("#nuevo-post").style.display='block';
+    document.querySelector("#timeline").style.display='none';
+    document.querySelector(".pagination").parentNode.style.display='none';  
+    
+    let objeto = {post: post1};
+    fetch('/verpost', {
+        method: 'POST',
+        body:JSON.stringify(objeto)
+    })
+    .then(response=>response.json())    
+    .then(datos=>{ 
+        post = post1;           
+        texto = datos.posteo.Texto;
+        document.querySelector("#newpost_Texto").innerText = texto;
+        
+    })
+}
+
+// Se encarga de enviar los datos del form para crear un nuevo post
+// Nos falta avisarle cuando es una edicion
+function enviar_post(n_post){
+
+
+    //No sabemos que valor de n_post esta llegando
+
+    console.log("n_post es:", n_post);          //Aca no llegamos cuando damos click
+    //Recibimos el form cuando se envia
+    document.querySelector('#form-nuevo-post').onsubmit = () => {
+
+        const imagen = document.querySelector('#newpost_Imagen').value;
+        const texto = document.querySelector('#newpost_Texto').value;
+        const usuario = document.querySelector('#newpost_User').value;
+        const likes = document.querySelector("#id_Likes").value;
+
+        //Enviamos el form    
+
+        fetch('/postear',{
+            method: 'POST',
+            body: JSON.stringify({
+                imagen: imagen,
+                texto: texto,
+                usuario: usuario,  
+                nuevo: n_post,                              
+            })                                
+        })        
+        .then(response => response.json())
+        .then(result=>{
+            console.log(result);
+        })
+
+        //cargar_form()
+        return false;
+    }; 
+
+}
+
 
 window.onscroll = () => {
 

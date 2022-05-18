@@ -4,8 +4,9 @@
 {% block body %}
     {% if user.is_authenticated %}
     <h3 id="h3-bienvenido">Bienvenido, {{user.username}}</h3>
-    <div id="div_user" hidden>{{user.id}}</div>
-        <div id="nuevo-post">
+    <div id="div_user" hidden>{{user.id}}</div>    
+    <h4 id="h4-nuevo-editar">Nuevo Post</h4>
+        <div id="nuevo-post">            
             <form id="form-nuevo-post" action="{% url 'postear' %}" method="post" enctype="multipart/form-data">       
                 <div class="grupo-form">
                     <label for="id_Imagen">Imagen:</label>

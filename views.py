@@ -81,13 +81,20 @@ def postear(request):
         return JsonResponse({"error": "POST request required."}, status=400)    
     else:           
         datos = json.loads(request.body) # datos es un objeto Python        
-        print(datos.values())
+        print(datos.values())        
         Usuario = datos.get("usuario","")
         user = User.objects.get(pk=Usuario)
         Texto = datos.get("texto", "")
-        Imagen = datos.get("imagen","")        
-        post = Post.objects.create(User = user, Texto = Texto, Imagen = Imagen, Likes=0)
-        post.save() 
+        Imagen = datos.get("imagen","")   
+        n_post = datos.get("nuevo","")     
+        print(n_post)
+        if(n_post==0):
+            post = Post.objects.create(User = user, Texto = Texto, Imagen = Imagen, Likes=0)
+        else:
+            post = Post.objects.get(pk=n_post)
+            post.Texto = Texto
+        post.save()        
+        print(post.Texto)
         return JsonResponse({"message": "Datos correctos."}, status=201)  
  
 
