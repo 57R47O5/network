@@ -23,8 +23,12 @@ document.addEventListener('DOMContentLoaded', function() {
     //0: nuevo post, otro numero: edicion
     let n_post = 0;    
     
-    enviar_post(n_post);
+    //enviar_post(n_post);
 
+    document.querySelector('#form-nuevo-post').onsubmit = () => {
+        enviar_post(n_post)
+        return false
+    };
     
 })
 
@@ -412,18 +416,22 @@ function editar(post){
         document.querySelector("#newpost_Texto").innerText = texto;
         
     })
+
+    document.querySelector('#form-nuevo-post').onsubmit = () => {
+        enviar_post(post);
+        return false
+    };
 }
 
 // Se encarga de enviar los datos del form para crear un nuevo post
 // Nos falta avisarle cuando es una edicion
 function enviar_post(n_post){
 
-
     //No sabemos que valor de n_post esta llegando
 
-    console.log("n_post es:", n_post);          //Aca no llegamos cuando damos click
+    console.log("n_post es:", n_post);          
     //Recibimos el form cuando se envia
-    document.querySelector('#form-nuevo-post').onsubmit = () => {
+    
 
         const imagen = document.querySelector('#newpost_Imagen').value;
         const texto = document.querySelector('#newpost_Texto').value;
@@ -448,7 +456,7 @@ function enviar_post(n_post){
 
         //cargar_form()
         return false;
-    }; 
+     
 
 }
 
@@ -464,4 +472,4 @@ window.onscroll = () => {
         //cargar_posts(pagina, Objetousuario);
     }
     return false
-};
+}

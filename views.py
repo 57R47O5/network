@@ -95,7 +95,7 @@ def postear(request):
             post.Texto = Texto
         post.save()        
         print(post.Texto)
-        return JsonResponse({"message": "Datos correctos."}, status=201)  
+        return JsonResponse({"message": "Datos correctos."}, status=201)          
  
 
 def login_view(request):
