@@ -45,8 +45,8 @@ function cargar_posts(pagina, usuario){
     // Seteamos la variable children
     let children=0;
     // Y la variable global previo_post    
-    previo_post = -1; //Esta bandera global nunca cambia
-    console.log("Estamos  cargando ahora", previo_post);
+    //previo_post = -1; //Esta bandera global nunca cambia
+    //console.log("Estamos  cargando ahora", previo_post);
 
     //Cargamos los posts. Recibimos como un solo objeto Json. Hay que cortar
     fetch('/posts/' + pagina, {
@@ -301,14 +301,18 @@ function  seguimiento(Mesigue, Lesigo){
 
 // Movemos el mouse sobre un post
 // Esta funcion trabaja con e.target.parentNode = div
+//Tenemos un problema con la variable global previo_post
 function mousesobrepost(e){  
     if (e.target.parentNode.classList == 'post'){ //Si el target es un hijo del post            
         post = e.target.parentNode.id.slice(5)
-        //console.log("Entrada", previo_post, post)
+        previo_post = document.querySelector("#div-previo-post").innerText;
+        console.log("Entrada", previo_post, post)
         //console.log("target.parentNode entrada", e.target.parentNode);
         if (previo_post != post){     
-            previo_post = post;                  
+            previo_post = post;  
+            document.querySelector("#div-previo-post").innerText=previo_post;                
             e.target.parentNode.addEventListener('click', clickpost)  //Tenemos que dar como argumento el evento
+            console.log("Cambio de clase. De post a post1. en mousesobrepost")
             e.target.parentNode.classList.add("post1");                
             e.target.parentNode.classList.remove("post");
         }
@@ -322,12 +326,14 @@ function mousefuerapost(e){
     //console.log("target salida", e.target)
     if (e.target.classList == "post1"){    
         //console.log("Saliendo", e.target);
-        previo_post = -1;
+        //previo_post = -1;
+        document.querySelector("#div-previo-post").innerText=-1;
         //Removemos el evento y agregamos otro
         e.target.removeEventListener('click', clickpost);    
-        //Cambiamos la clase
-        e.target.classList.add("post");
+        //Cambiamos la clase        
+        console.log("Cambio de clase, post1 a post. En mouserfuerapost")
         e.target.classList.remove("post1");
+        e.target.classList.add("post");
         //Podemos intentar acá desactivar los botones. 
         document.querySelector("#Butlike-post-" + post).style.display='none';
         document.querySelector("#Butunlike-post-" + post).style.display='none';
