@@ -201,7 +201,10 @@ def like(request):
         datos = json.loads(request.body)
         post_id = datos.get("Post","")
         usuario = request.user
-        Posteo = Post.objects.get(pk=post_id)        
+        Posteo = Post.objects.get(pk=post_id)  
+        n_likes = Posteo.Likes 
+        Posteo.Likes = n_likes+1 
+        Posteo.save()    
         like = Like.objects.create(Posteo=Posteo, Usuario=usuario)
         like.save()
         return JsonResponse({"message":"Like correcto"}, status=201)
@@ -215,7 +218,10 @@ def unlike(request):
         datos = json.loads(request.body)
         post_id = datos.get("Post","")
         usuario = request.user
-        Posteo = Post.objects.get(pk=post_id)        
+        Posteo = Post.objects.get(pk=post_id)  
+        n_likes = Posteo.Likes 
+        Posteo.Likes = n_likes-1 
+        Posteo.save()         
         like = Like.objects.get(Posteo=Posteo, Usuario=usuario)        
         like.delete()
         return JsonResponse({"message":"Unlike correcto"}, status=201)

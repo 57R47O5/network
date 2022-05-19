@@ -13,9 +13,8 @@ div.post1{
     border-color: black;    
     border-radius: 5px;
     padding: 10px;
-    margin: 40px; 
-    background-color: #007bff;
-    animation: grow;      
+    margin: 10px; 
+    background-color: #007bff;       
 }
 button{
     border-style: solid;
