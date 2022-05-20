@@ -57,6 +57,7 @@ function cargar_posts(pagina, usuario){
 }   
 
 function cargar_pagina(){
+
     // Usamos los botones para elegir entre diferentes vistas
     document.querySelector("#id_following").addEventListener('click',()=>{
         let Objetousuario = {Todo:false, User:0, Seguidos: true};
@@ -79,7 +80,11 @@ function cargar_pagina(){
     //0: nuevo post, otro numero: edicion
     let n_post = 0;    
     
-    //enviar_post(n_post);
+    // Al dar click a following
+
+    document.querySelector("#id_following").addEventListener('click', siguiendo);
+
+    //Al enviar el form
 
     document.querySelector('#form-nuevo-post').onsubmit = () => {
         enviar_post(n_post)        
@@ -211,16 +216,19 @@ function perfil(usuario){
       let seguido = usuario;  
       let seguidor = usuariolog;    
       seguir(seguidor, seguido);
+      cargar_pagina();
     })
     document.querySelector('#unfollow-button').addEventListener('click', ()=>{      
         let seguido = usuario;  
         let seguidor = usuariolog;    
         dejar_de_seguir(seguidor, seguido);
+        cargar_pagina();
       })
 
     return false;
 
 }
+
 // Crea una relacion de seguimiento
 function seguir(seguidor, seguido){
     let datos={Seguidor:seguidor, Seguido:seguido}
@@ -365,7 +373,7 @@ function clickpost(e)
             usuario = e.target.firstElementChild.value;
             perfil(usuario);                
         })
-        
+
         administrador_buttonlike(bandera_like, post); 
         let usuariolog = document.querySelector("#div_user").innerHTML;  
         if(autor == usuariolog){
@@ -476,6 +484,10 @@ function enviar_post(n_post){
 
 }
 
+function siguiendo(){
+    let Objetousuario = {Todo:false, User:0, Seguidos: true};
+    cargar_posts(pagina, Objetousuario);
+}
 
 window.onscroll = () => {
 
