@@ -1,34 +1,7 @@
 let pagina = 1
 document.addEventListener('DOMContentLoaded', function() {
 
-    // Usamos los botones para elegir entre diferentes vistas
-    document.querySelector("#id_following").addEventListener('click',()=>{
-        let Objetousuario = {Todo:false, User:0, Seguidos: true};
-        cargar_posts(pagina, Objetousuario);
-
-    })
-
-
-    //Por default, cargamos todos los posts, el form y la paginacion
-    document.querySelector("#timeline").style.display = 'block'
-    document.querySelector("#perfil").style.display = 'none'
-    document.querySelector("#nuevo-post").style.display = 'block'
-    document.querySelector("#h3-bienvenido").style.display = 'block'
-    document.querySelector(".pagination").parentNode.style.display='block';
-
-    let Objetousuario = {Todo:true, User:0, Seguidos: false};
-    cargar_posts(pagina, Objetousuario);
-
-    // Usaremos esta bandera para indicar a enviar_post() si se trata de un post nuevo o una edicion
-    //0: nuevo post, otro numero: edicion
-    let n_post = 0;    
-    
-    //enviar_post(n_post);
-
-    document.querySelector('#form-nuevo-post').onsubmit = () => {
-        enviar_post(n_post)
-        return false
-    };
+    cargar_pagina();  
     
 })
 
@@ -44,10 +17,7 @@ function cargar_posts(pagina, usuario){
 
     // Seteamos la variable children
     let children=0;
-    // Y la variable global previo_post    
-    //previo_post = -1; //Esta bandera global nunca cambia
-    //console.log("Estamos  cargando ahora", previo_post);
-
+    
     //Cargamos los posts. Recibimos como un solo objeto Json. Hay que cortar
     fetch('/posts/' + pagina, {
         method: 'POST',
@@ -85,6 +55,62 @@ function cargar_posts(pagina, usuario){
 
         
 }   
+
+function cargar_pagina(){
+    // Usamos los botones para elegir entre diferentes vistas
+    document.querySelector("#id_following").addEventListener('click',()=>{
+        let Objetousuario = {Todo:false, User:0, Seguidos: true};
+        cargar_posts(pagina, Objetousuario);
+
+    })
+
+
+    //Por default, cargamos todos los posts, el form y la paginacion
+    document.querySelector("#timeline").style.display = 'block'
+    document.querySelector("#perfil").style.display = 'none'
+    document.querySelector("#nuevo-post").style.display = 'block'
+    document.querySelector("#h3-bienvenido").style.display = 'block'
+    document.querySelector(".pagination").parentNode.style.display='block';
+
+    let Objetousuario = {Todo:true, User:0, Seguidos: false};
+    cargar_posts(pagina, Objetousuario);
+
+    // Usaremos esta bandera para indicar a enviar_post() si se trata de un post nuevo o una edicion
+    //0: nuevo post, otro numero: edicion
+    let n_post = 0;    
+    
+    //enviar_post(n_post);
+
+    document.querySelector('#form-nuevo-post').onsubmit = () => {
+        enviar_post(n_post)        
+        cargar_pagina()   
+        window.location.reload()     
+        return false
+    };
+
+    //Paginador
+
+    document.querySelector("#page-item-anterior").addEventListener('click', ()=> {        
+        if (pagina > 1){pagina--;} 
+        let Objetousuario = {Todo:true, User:0, Seguidos: false};
+        cargar_posts(pagina, Objetousuario);       
+    });
+    document.querySelector("#page-item-siguiente").addEventListener('click', ()=> {        
+        pagina++;
+        let Objetousuario = {Todo:true, User:0, Seguidos: false};
+        cargar_posts(pagina, Objetousuario);       
+    });
+    document.querySelector("#page-item-1").addEventListener('click', ()=> {        
+        if (pagina > 1){pagina--;} 
+        let Objetousuario = {Todo:true, User:0, Seguidos: false};
+        cargar_posts(pagina, Objetousuario);       
+    });
+    document.querySelector("#page-item-3").addEventListener('click', ()=> {        
+        pagina++;
+        let Objetousuario = {Todo:true, User:0, Seguidos: false};
+        cargar_posts(pagina, Objetousuario);       
+    });
+}
 
 function crear_post(post){
             let PostDiv = document.createElement("div");            
@@ -128,10 +154,10 @@ function crear_post(post){
 
             PostDiv.appendChild(UserDiv);
             UserDiv.appendChild(UserIdDiv);
-            UserDiv.addEventListener('click', function(e){
+            /*UserDiv.addEventListener('click', function(e){
                 usuario = e.target.firstElementChild.value;
                 perfil(usuario);                
-            })
+            })*/
             PostDiv.appendChild(TextoDiv);
             PostDiv.appendChild(LikesDiv);
             PostDiv.appendChild(TimestampDiv);
@@ -195,31 +221,6 @@ function perfil(usuario){
     return false;
 
 }
-
-// Paginador
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector("#page-item-anterior").addEventListener('click', ()=> {        
-        if (pagina > 1){pagina--;} 
-        let Objetousuario = {Todo:true, User:0, Seguidos: false};
-        cargar_posts(pagina, Objetousuario);       
-    });
-    document.querySelector("#page-item-siguiente").addEventListener('click', ()=> {        
-        pagina++;
-        let Objetousuario = {Todo:true, User:0, Seguidos: false};
-        cargar_posts(pagina, Objetousuario);       
-    });
-    document.querySelector("#page-item-1").addEventListener('click', ()=> {        
-        if (pagina > 1){pagina--;} 
-        let Objetousuario = {Todo:true, User:0, Seguidos: false};
-        cargar_posts(pagina, Objetousuario);       
-    });
-    document.querySelector("#page-item-3").addEventListener('click', ()=> {        
-        pagina++;
-        let Objetousuario = {Todo:true, User:0, Seguidos: false};
-        cargar_posts(pagina, Objetousuario);       
-    });
-})
-
 // Crea una relacion de seguimiento
 function seguir(seguidor, seguido){
     let datos={Seguidor:seguidor, Seguido:seguido}
@@ -356,9 +357,15 @@ function clickpost(e)
     .then(datos=>{ 
         post = post1;   
         autor = datos.posteo.User_id;     
-        bandera_like = datos.like;
+        bandera_like = datos.like;        
         document.querySelector("#timeline").innerHTML = "";
-        crear_post(datos.posteo);  
+        crear_post(datos.posteo); 
+
+        document.querySelector("#timeline").firstElementChild.addEventListener('click', function(e){
+            usuario = e.target.firstElementChild.value;
+            perfil(usuario);                
+        })
+        
         administrador_buttonlike(bandera_like, post); 
         let usuariolog = document.querySelector("#div_user").innerHTML;  
         if(autor == usuariolog){
@@ -425,6 +432,9 @@ function editar(post){
 
     document.querySelector('#form-nuevo-post').onsubmit = () => {
         enviar_post(post);
+        //document.querySelector("#newpost_Texto").innerHTML=""
+        cargar_pagina();
+        window.location.reload();        
         return false
     };
 }
